@@ -29,7 +29,7 @@
        - map   : what to search in Apple Maps (place name + city works best).
                  Leave "" if there's nothing to map (e.g. "check in", "pack").
        - tags  : any of food, sight, temple, music, transit, stay, free, explore,
-                 games — or make up your own; unrecognised tags just render grey
+                 games, vintage — or make up your own; unrecognised tags just render grey
                  (handy for a one-off status flag like "closed").
        - photo : optional. A direct image URL shown as a thumbnail on the
                  card. Prefer stable, openly-licensed sources (e.g. Wikimedia
@@ -157,10 +157,35 @@ const TRIP = {
       { time:"20:00", name:"Golden Gai", note:"The nightly ritual.", tags:["explore"], map:"Shinjuku Golden Gai", coords:[35.6940,139.7047],
         photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Golden_Gai%2C_Kabukicho%2C_Shinjuku_%2842385146670%29.jpg/250px-Golden_Gai%2C_Kabukicho%2C_Shinjuku_%2842385146670%29.jpg" /* Photo: Fabio Achilli, CC BY 2.0, via Wikimedia Commons */ },
     ]},
-    { date:"2026-11-13", city:"Kyoto", stops:[
-      { time:"08:30", name:"Arashiyama bamboo grove", note:"Early = no crowds", tags:["sight"], map:"Arashiyama Bamboo Grove", coords:[35.0167,135.6711] },
-      { time:"11:00", name:"Tenryu-ji", note:"Zen garden next to the grove", tags:["temple"], map:"Tenryu-ji Kyoto", coords:[35.0162,135.6729] },
-      { time:"15:00", name:"Kinkaku-ji (Golden Pavilion)", note:"", tags:["temple","sight"], map:"Kinkaku-ji Kyoto", coords:[35.0395,135.7295] },
+    { date:"2026-11-13", city:"Tokyo · Nakano — Vintage & games", stops:[
+      // ---- BREAKFAST · near the apartment ----
+      { time:"09:30", name:"The Bake Factory (Shin-Ōkubo)", note:"Easy croissant + coffee near the flat (opens 9). Or hold out and grab a café in Nakano's Sun Mall on arrival — this is a late-start day.", tags:["food"], map:"2-2-1 Hyakunincho, Shinjuku City, Tokyo", coords:[35.7030,139.6986] },
+
+      // ---- GET THERE ----
+      { time:"11:00", name:"Ōkubo → Nakano", note:"JR Chūō-Sōbu line (yellow) westbound, ~5 min, 2 stops (Ōkubo → Higashi-Nakano → Nakano). North exit for Sun Mall.", tags:["transit"], map:"Okubo Station, Shinjuku, Tokyo", coords:[35.7022,139.6952] },
+
+      // ---- THE INDOOR STREET ----
+      { time:"11:15", name:"Nakano Sun Mall", note:"The covered shopping arcade you remembered — runs straight from the station up to Broadway. Wander it on the way in.", tags:["explore"], map:"5-63-3 Nakano, Nakano City, Tokyo", coords:[35.7079,139.6693],
+        photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Nakano_sunmall_shopping_street_tokyo_2009.JPG/250px-Nakano_sunmall_shopping_street_tokyo_2009.JPG" /* Photo: Kentin, CC BY-SA 3.0, via Wikimedia Commons */ },
+
+      // ---- LUNCH · local legend, before the noon rush ----
+      { time:"11:30", name:"Chūka Soba Aoba (honten)", note:"Nakano IS the birthplace of this rich double-broth (fish + pork) style — this is the original shop. Ticket machine, quick, cheap. Opens 10:30, so beat the queue.", tags:["food"], map:"5-58-1 Nakano, Nakano City, Tokyo", coords:[35.7079,139.6693],
+        photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Chuka_soba_aoba_nakano_head_store_2015.jpg/250px-Chuka_soba_aoba_nakano_head_store_2015.jpg" /* Photo: Kentin, CC BY-SA 4.0, via Wikimedia Commons */ },
+
+      // ---- GAMES · Broadway ----
+      { time:"12:15", name:"Nakano Broadway", note:"The 4-floors-plus complex: dozens of Mandarake shops + indies selling retro consoles, carts, figures, watches. Game Station (Western-game merch) is in here too. Most shops open 12:00.", tags:["games"], map:"5-52-15 Nakano, Nakano City, Tokyo", coords:[35.7090,139.6658],
+        photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Nakano_broadway_entrance.JPG/250px-Nakano_broadway_entrance.JPG" /* Photo: Kentin, CC BY-SA 3.0, via Wikimedia Commons */ },
+      { time:"13:00", name:"Mandarake Nakano", note:"Not one shop but many themed branches scattered through Broadway — retro games/consoles, robots, Showa memorabilia. Easy to lose an hour+. Opens 12:00.", tags:["games"], map:"Mandarake Nakano", coords:[35.7090,139.6658] },
+
+      // ---- VINTAGE CLOTHING ----
+      { time:"14:30", name:"TreFacStyle Nakano", note:"Quality second-hand — brands, bags, shoes, neatly sorted (vintage Ferragamo for ¥4k kind of finds). Opens 11:00. ~8 min from Broadway.", tags:["vintage"], map:"2-14-22 Nakano, Nakano City, Tokyo", coords:[35.7041,139.6691] },
+      { time:"15:15", name:"Little Bird", note:"Charming 60s/70s vintage, beautifully kept pieces. Opens 12:00.", tags:["vintage"], map:"5-29-4 Nakano, Nakano City, Tokyo", coords:[35.7079,139.6693] },
+      { time:"", name:"Broadway vintage + backstreets", note:"More vintage in Broadway's upper floors (e.g. Vintage Life, shop #114, opens 14:00) and the furugiya dotted around the north-exit backstreets — worth a wander.", tags:["vintage"], map:"5-52-15 Nakano, Nakano City, Tokyo", coords:[35.7090,139.6658] },
+
+      // ---- BACK + close ----
+      { time:"18:30", name:"Nakano → Shinjuku", note:"Chūō line rapid, 1 stop, ~4 min (or Chūō-Sōbu back via Ōkubo).", tags:["transit"], map:"Nakano Station, Tokyo", coords:[35.7058,139.6658] },
+      { time:"20:00", name:"Golden Gai", note:"The nightly ritual.", tags:["explore"], map:"Shinjuku Golden Gai", coords:[35.6940,139.7047],
+        photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Golden_Gai%2C_Kabukicho%2C_Shinjuku_%2842385146670%29.jpg/250px-Golden_Gai%2C_Kabukicho%2C_Shinjuku_%2842385146670%29.jpg" /* Photo: Fabio Achilli, CC BY 2.0, via Wikimedia Commons */ },
     ]},
     // …add the rest of your days here (through 2026-11-24).
   ]

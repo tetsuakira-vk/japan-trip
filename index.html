@@ -21,7 +21,7 @@
 :root{
   --bg:#F4F1EC; --ink:#161428; --sub:#736F8C; --card:#FFFFFF; --line:#E7E2D8;
   --c-transit:#3B6FE0; --c-food:#E08A2E; --c-sight:#2E9E6B; --c-temple:#8B4FD1;
-  --c-music:#D1367B; --c-stay:#6B7280; --c-free:#B08A2E; --c-explore:#0EA5A5; --c-games:#DB4B4B;
+  --c-music:#D1367B; --c-stay:#6B7280; --c-free:#B08A2E; --c-explore:#0EA5A5; --c-games:#DB4B4B; --c-vintage:#8B5A2B;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
@@ -186,13 +186,13 @@ body.view-map .mapcol{display:flex;flex-direction:column;height:min(65vh,540px);
 /* ============================================================================
    App — you shouldn't need to edit this. Trip content lives in data.js.
 ============================================================================ */
-const CAT = { transit:'var(--c-transit)', food:'var(--c-food)', sight:'var(--c-sight)', temple:'var(--c-temple)', music:'var(--c-music)', stay:'var(--c-stay)', free:'var(--c-free)', explore:'var(--c-explore)', games:'var(--c-games)' };
+const CAT = { transit:'var(--c-transit)', food:'var(--c-food)', sight:'var(--c-sight)', temple:'var(--c-temple)', music:'var(--c-music)', stay:'var(--c-stay)', free:'var(--c-free)', explore:'var(--c-explore)', games:'var(--c-games)', vintage:'var(--c-vintage)' };
 // Fallback icon shown in the thumbnail slot when a stop has no photo.
 // One kanji per category instead of emoji — reads cleaner at small size and
 // fits the trip's theme. 駅 station/transit, 食 food, 見 sightseeing, 寺 temple,
 // 音 music, 宿 lodging, 休 free/rest, 歩 explore on foot, 遊 games/play. 地 is the
 // generic fallback.
-const ICONS = { transit:'駅', food:'食', sight:'見', temple:'寺', music:'音', stay:'宿', free:'休', explore:'歩', games:'遊' };
+const ICONS = { transit:'駅', food:'食', sight:'見', temple:'寺', music:'音', stay:'宿', free:'休', explore:'歩', games:'遊', vintage:'古' };
 const WD = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 const MO = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const strip = document.getElementById('strip');
@@ -362,6 +362,7 @@ const STATIONS = [
   {name:'Kanda Station', coords:[35.6945,139.7707]},
   {name:'Jimbocho Station', coords:[35.6960,139.7584]},
   {name:'Ikebukuro Station', coords:[35.7298,139.7131]},
+  {name:'Nakano Station', coords:[35.7058,139.6658]},
   {name:'Tokyo Station', coords:[35.6827,139.7651]},
   {name:'Kyoto Station', coords:[34.9846,135.7584]},
   {name:'Inari Station', coords:[34.9667,135.7708]},
