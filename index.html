@@ -92,9 +92,23 @@ body.view-map .day{display:none}
 
 /* ---- map ---- */
 .mapcol{display:none}
-body.view-map .mapcol{display:block;height:min(65vh,540px);margin:14px 18px 0;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(22,20,40,.08)}
-#mapPane{width:100%;height:100%;background:var(--line)}
+body.view-map .mapcol{display:flex;flex-direction:column;height:min(65vh,540px);margin:14px 18px 0;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(22,20,40,.08)}
+#mapPane{width:100%;flex:1 1 auto;background:var(--line)}
+.maplegend{flex:0 0 auto;font-size:10.5px;color:var(--sub);text-align:center;padding:6px 8px;background:var(--card)}
+/* richer popup: reuse the same .row/.thumb/.tag/.map classes as the list cards */
 .leaflet-popup-content{margin:10px 12px}
+.leaflet-popup-content .row{gap:10px}
+.leaflet-popup-content .thumb{width:44px;height:44px;flex:0 0 44px;font-size:18px}
+.leaflet-popup-content .name{font-size:14px}
+.leaflet-popup-content .note{font-size:12px;margin-top:4px}
+.leaflet-popup-content .map{padding:6px 11px;font-size:12px}
+/* hover tooltip on a stop pin */
+.stoptip{background:var(--ink)!important;color:#fff!important;border:none!important;font-weight:700;font-size:12px;padding:4px 9px!important;border-radius:8px!important;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.stoptip::before{border-top-color:var(--ink)!important}
+/* nearby-station diamond marker's name tooltip */
+.stationtip{background:#fff!important;color:var(--ink)!important;border:1px solid var(--line)!important;font-weight:700;font-size:11px;padding:3px 8px!important;border-radius:7px!important}
+/* small pill labelling the gap between two consecutive stops */
+.distlabel{background:#fff;border:1px solid var(--line);border-radius:20px;padding:2px 8px;font-size:10.5px;font-weight:700;color:var(--sub);white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.15);transform:translate(-50%,-50%)}
 
 /* ---- private notes ---- */
 .notes{margin:26px 18px 0;background:var(--card);border-radius:16px;box-shadow:0 2px 10px rgba(22,20,40,.06);overflow:hidden}
@@ -105,7 +119,10 @@ body.view-map .mapcol{display:block;height:min(65vh,540px);margin:14px 18px 0;bo
 .notes-hint{font-size:11.5px;color:var(--sub);margin:0 0 10px;line-height:1.5}
 .notes-panel textarea{width:100%;min-height:120px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;font-size:13.5px;color:var(--ink);background:var(--bg);resize:vertical;box-sizing:border-box}
 .notes-panel textarea:focus-visible{outline:2px solid var(--c-food);outline-offset:1px}
-.notes-saved{font-size:11px;color:var(--c-sight);margin:6px 0 0;height:14px;opacity:0;transition:opacity .3s ease}
+.notes-row{display:flex;align-items:center;gap:10px;margin-top:8px}
+.notes-copy{border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:12px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer}
+.notes-copy:active{background:var(--line)}
+.notes-saved{font-size:11px;color:var(--c-sight);margin:0;opacity:0;transition:opacity .3s ease}
 .notes-saved.show{opacity:1}
 
 /* ---- desktop: list + sticky map side by side, no tabs ----
@@ -128,7 +145,7 @@ body.view-map .mapcol{display:block;height:min(65vh,540px);margin:14px 18px 0;bo
   .day{grid-area:day} .notes{grid-area:notes} .foot{grid-area:foot}
   .viewtabs{display:none}
   body.view-map .day{display:block}
-  .mapcol{grid-area:map;display:block;min-width:320px;position:sticky;top:20px;height:calc(100vh - 40px);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(22,20,40,.08)}
+  .mapcol{grid-area:map;display:flex;flex-direction:column;min-width:320px;position:sticky;top:20px;height:calc(100vh - 40px);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(22,20,40,.08)}
 }
 </style>
 </head>
@@ -145,14 +162,17 @@ body.view-map .mapcol{display:block;height:min(65vh,540px);margin:14px 18px 0;bo
     <button class="vtab" data-view="map">Map</button>
   </div>
   <main class="day" id="day" aria-live="polite"></main>
-  <aside class="mapcol"><div id="mapPane"></div></aside>
+  <aside class="mapcol"><div id="mapPane"></div><p class="maplegend">Dashed line = straight-line distance, not a routed walk · small diamonds = nearby stations</p></aside>
 
   <div class="notes">
     <button class="notes-toggle" id="notesToggle" aria-expanded="false">Private notes</button>
     <div class="notes-panel" id="notesPanel" hidden>
-      <p class="notes-hint">Saved only in this browser's storage on this device — never uploaded, never committed to git, not part of this public site's code. Good for the exact Airbnb address, door codes, wifi password, emergency contacts. Clearing site data or switching browsers/devices loses it, so keep a backup somewhere else too.</p>
+      <p class="notes-hint">Saved only in this browser's storage on this device — never uploaded, never committed to git, not part of this public site's code. Good for the exact Airbnb address, door codes, wifi password, emergency contacts. This does NOT sync between your phone and desktop (or any other browser) — they're separate storage. Use Copy below and paste into the box on your other device once, or just keep the real copy in a notes app/password manager you already sync.</p>
       <textarea id="notesText" placeholder="Airbnb address, door code, wifi password, emergency contacts…"></textarea>
-      <p class="notes-saved" id="notesSaved">Saved on this device</p>
+      <div class="notes-row">
+        <button class="notes-copy" id="notesCopy" type="button">Copy</button>
+        <p class="notes-saved" id="notesSaved">Saved on this device</p>
+      </div>
     </div>
   </div>
 
@@ -313,30 +333,93 @@ function ensureMap(){
   markersLayer = L.layerGroup().addTo(map);
   map.setView([35.6762,139.6503], 12);
 }
-function updateMapMarkers(d){
+
+// Straight-line ("as the crow flies") distance in metres between two
+// [lat,lon] points, and a rough walking-time estimate (~80 m/min). This is
+// NOT a routed walking distance — there's no key-free routing API — it's
+// just a quick "how close is this" gut-check between consecutive stops.
+function haversine(a,b){
+  const R=6371000, toRad=x=>x*Math.PI/180;
+  const dLat=toRad(b[0]-a[0]), dLon=toRad(b[1]-a[1]);
+  const s = Math.sin(dLat/2)**2 + Math.cos(toRad(a[0]))*Math.cos(toRad(b[0]))*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(s));
+}
+function fmtDist(m){ return m<1000 ? (Math.round(m/10)*10)+' m' : (m/1000).toFixed(1)+' km'; }
+
+/* Known nearby train/subway stations, shown as small diamond markers when
+   they fall inside the current day's map view — a quick "what's walkable
+   from here" reference layer. Curated rather than looked up live (keeps the
+   map fast and not dependent on another API) — tell Claude if a day visits
+   somewhere not covered yet and it'll add the station. */
+const STATIONS = [
+  {name:'Shin-Okubo Station', coords:[35.7013,139.7001]},
+  {name:'Okubo Station', coords:[35.7022,139.6952]},
+  {name:'Shinjuku Station', coords:[35.6923,139.6995]},
+  {name:'Yoyogi Station', coords:[35.6840,139.7017]},
+  {name:'Shibuya Station', coords:[35.6582,139.7007]},
+  {name:'Akihabara Station', coords:[35.6990,139.7737]},
+  {name:'Ochanomizu Station', coords:[35.6963,139.7646]},
+  {name:'Kanda Station', coords:[35.6945,139.7707]},
+  {name:'Jimbocho Station', coords:[35.6960,139.7584]},
+  {name:'Tokyo Station', coords:[35.6827,139.7651]},
+  {name:'Kyoto Station', coords:[34.9846,135.7584]},
+  {name:'Inari Station', coords:[34.9667,135.7708]},
+  {name:'Saga-Arashiyama Station', coords:[35.0188,135.6814]},
+];
+
+function updateMapMarkers(d, ni, isNext){
   markersLayer.clearLayers();
-  const pts=[];
-  (d.stops||[]).forEach(s=>{
+  const pts=[], seq=[];
+  (d.stops||[]).forEach((s,i)=>{
     if(!s.coords) return;
     const cat = s.tags&&s.tags[0]&&CAT[s.tags[0]] ? CAT[s.tags[0]] : null;
     const color = catColor(cat);
+    const on = i===ni, sz = on?20:16;
     const icon = L.divIcon({
       className:'',
-      html:'<div style="width:16px;height:16px;border-radius:50%;background:'+color+';border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)"></div>',
-      iconSize:[16,16], iconAnchor:[8,8]
+      html:'<div style="width:'+sz+'px;height:'+sz+'px;border-radius:50%;background:'+color+';border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)'+(on?';outline:2px solid '+color:'')+'"></div>',
+      iconSize:[sz,sz], iconAnchor:[sz/2,sz/2]
     });
     const marker = L.marker(s.coords, {icon}).addTo(markersLayer);
-    const dir = s.map ? ('<br><a href="'+mapLink(s.map)+'" target="_blank" rel="noopener" style="color:'+color+';font-weight:600;text-decoration:none">Directions →</a>') : '';
-    marker.bindPopup('<div style="font:13px -apple-system,sans-serif;min-width:140px"><b>'+s.name+'</b>'+(s.time?' · '+s.time:'')+dir+'</div>');
+    marker.bindTooltip((s.time?s.time+' · ':'')+s.name, {direction:'top', offset:[0,-sz/2-2], className:'stoptip'});
+    marker.bindPopup(stopRow(s, on, isNext), {maxWidth:260, minWidth:220});
     pts.push(s.coords);
+    seq.push(s.coords);
   });
-  if(pts.length) map.fitBounds(pts, {padding:[30,30], maxZoom:16});
+
+  // dashed line + distance/time label between each consecutive pair of stops
+  for(let i=0;i<seq.length-1;i++){
+    const a=seq[i], b=seq[i+1];
+    L.polyline([a,b], {color:cssVar('--sub'), weight:2, dashArray:'4,7', opacity:.55}).addTo(markersLayer);
+    const dist=haversine(a,b), mins=Math.max(1, Math.round(dist/80));
+    const mid=[(a[0]+b[0])/2, (a[1]+b[1])/2];
+    L.marker(mid, {
+      icon: L.divIcon({className:'', html:'<div class="distlabel">'+fmtDist(dist)+' · ~'+mins+' min</div>', iconSize:[0,0], iconAnchor:[0,0]}),
+      interactive:false
+    }).addTo(markersLayer);
+  }
+
+  if(pts.length) map.fitBounds(pts, {padding:[40,40], maxZoom:16});
   else map.setView([35.6762,139.6503], 12);
+
+  // nearby stations inside the current view (padded a little beyond the fit)
+  const bounds = pts.length ? map.getBounds().pad(0.15) : null;
+  STATIONS.forEach(st=>{
+    if(!bounds || !bounds.contains(st.coords)) return;
+    const icon = L.divIcon({
+      className:'',
+      html:'<div style="width:10px;height:10px;background:#fff;border:2px solid '+cssVar('--sub')+';transform:rotate(45deg);box-shadow:0 1px 3px rgba(0,0,0,.3)"></div>',
+      iconSize:[10,10], iconAnchor:[5,5]
+    });
+    L.marker(st.coords, {icon, interactive:true}).addTo(markersLayer)
+      .bindTooltip(st.name, {direction:'top', offset:[0,-6], className:'stationtip'});
+  });
 }
 function maybeUpdateMap(d){
   if(!mapVisible()) return;
   ensureMap();
-  updateMapMarkers(d);
+  const ni = nowIndex(d.stops||[]);
+  updateMapMarkers(d, ni, computeIsNext(d, ni));
   requestAnimationFrame(()=>map.invalidateSize());
 }
 
@@ -352,6 +435,10 @@ function nowIndex(stops){
   }
   if(best<0){ for(let i=0;i<stops.length;i++) if(stops[i].time){ return i; } }
   return best;
+}
+// is the "now" stop actually upcoming (Next) rather than already started (Now)?
+function computeIsNext(d, ni){
+  return ni>=0 && d.date===TK && (()=>{const n=new Date(),mins=n.getHours()*60+n.getMinutes();const t=d.stops[ni].time;if(!t)return false;const[h,m]=t.split(':').map(Number);return h*60+m>mins;})();
 }
 
 // Inner content of one stop (thumb + name/time/note/tags/directions).
@@ -405,7 +492,7 @@ function render(){
     html+='<div class="free"><p class="k">Free day</p><p>Nothing booked. Wander, wash socks, find a café.</p></div>';
   } else {
     const ni=nowIndex(d.stops);
-    const isNext = ni>=0 && d.date===TK && (()=>{const n=new Date(),mins=n.getHours()*60+n.getMinutes();const t=d.stops[ni].time;if(!t)return false;const[h,m]=t.split(':').map(Number);return h*60+m>mins;})();
+    const isNext = computeIsNext(d, ni);
     html+='<div class="cards">';
     groupStops(d.stops).forEach(block=>{
       if(block.type==='solo'){
@@ -491,7 +578,15 @@ desktopMQ.addEventListener('change', ()=>maybeUpdateMap(TRIP.days[current]));
   const panel=document.getElementById('notesPanel');
   const ta=document.getElementById('notesText');
   const saved=document.getElementById('notesSaved');
+  const copyBtn=document.getElementById('notesCopy');
   try{ const v=localStorage.getItem(KEY); if(v) ta.value=v; }catch(e){ /* storage unavailable — box still usable for the session */ }
+  copyBtn.addEventListener('click', async ()=>{
+    try{
+      await navigator.clipboard.writeText(ta.value);
+      const old=copyBtn.textContent; copyBtn.textContent='Copied';
+      setTimeout(()=>copyBtn.textContent=old, 1200);
+    }catch(e){ ta.select(); /* fallback: at least select it so Cmd/Ctrl+C works */ }
+  });
   toggle.addEventListener('click', ()=>{
     const open = toggle.getAttribute('aria-expanded')==='true';
     toggle.setAttribute('aria-expanded', open?'false':'true');
