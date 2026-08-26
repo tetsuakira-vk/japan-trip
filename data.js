@@ -124,11 +124,38 @@ const TRIP = {
       { time:"20:00", name:"Golden Gai", note:"Nightly ritual. Hanazono Shrine right beside it for a quiet minute first.", tags:["explore"], map:"Shinjuku Golden Gai", coords:[35.6940,139.7047],
         photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Golden_Gai%2C_Kabukicho%2C_Shinjuku_%2842385146670%29.jpg/250px-Golden_Gai%2C_Kabukicho%2C_Shinjuku_%2842385146670%29.jpg" /* Photo: Fabio Achilli, CC BY 2.0, via Wikimedia Commons */ },
     ]},
-    { date:"2026-11-12", city:"Tokyo → Kyoto", stops:[
-      { time:"10:03", name:"Shinkansen to Kyoto", note:"Nozomi from Tokyo Stn — reserved car. ~2h15", tags:["transit"], map:"Tokyo Station", coords:[35.6827,139.7651] },
-      { time:"12:30", name:"Drop bags at Kyoto Airbnb", note:"", tags:["stay"], map:"" },
-      { time:"14:00", name:"Fushimi Inari", note:"Endless torii — go up past the crowds", tags:["temple","sight"], map:"Fushimi Inari Taisha", coords:[34.9675,135.7797] },
-      { time:"18:00", name:"Dinner — Pontocho alley", note:"", tags:["food"], map:"Pontocho Kyoto", coords:[35.0042,135.7712] },
+    { date:"2026-11-12", city:"Tokyo · Ikebukuro — Arcades & retro", stops:[
+      // ---- BREAKFAST · near the apartment ----
+      { time:"09:00", name:"The Bake Factory (Shin-Ōkubo)", note:"Croissants + coffee, opens 9:00, right by the flat (Hyakunincho). Grab-and-go or sit. Third breakfast option so you're not repeating.", tags:["food"], map:"2-2-1 Hyakunincho, Shinjuku City, Tokyo", coords:[35.7030,139.6986] },
+
+      // ---- GET THERE ----
+      { time:"10:15", name:"Shin-Ōkubo → Ikebukuro", note:"Yamanote line, ~7 min, 3 stops (Shin-Ōkubo → Takadanobaba → Mejiro → Ikebukuro). Head for the East exit / Sunshine City.", tags:["transit"], map:"Shin-Okubo Station, Tokyo", coords:[35.7013,139.7001] },
+
+      // ---- ARCADES · the real game floors ----
+      { time:"10:30", name:"Round1 Ikebukuro", note:"Massive multi-floor arcade — pay by the hour, free-play on loads of machines, plus bowling/sports upstairs. Open 24h. Best value for actually playing.", tags:["games"], map:"1-14-1 Higashiikebukuro, Toshima City, Tokyo", coords:[35.7312,139.7149] },
+      { time:"11:15", name:"Taito Station Ikebukuro", note:"Classic cabinets, fighting + rhythm games (Ongeki etc), VR in the basement. Good catch-rate cranes too. West exit side. Opens 10:00.", tags:["games"], map:"1-15-9 Nishiikebukuro, Toshima City, Tokyo" /* ← address corrected: you had 1-15-15, confirmed real one is 1-15-9 */, coords:[35.7302,139.7094] },
+      { time:"", name:"GiGO Ikebukuro", note:"Mostly crane/claw machines — mixed reputation (rigged-machine complaints), so go in eyes-open. Some video game floors upstairs. This is the GiGO flagship store. Opens 10:00.", tags:["games"], map:"1-13-6 Higashiikebukuro, Toshima City, Tokyo", coords:[35.7312,139.7149],
+        photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Ikebukuro-Tokyo---2025-04-19_001.jpg/250px-Ikebukuro-Tokyo---2025-04-19_001.jpg" /* Photo: RuinDig/Yuki Uchida, CC BY 4.0, via Wikimedia Commons */ },
+
+      // ---- RETRO / SECOND-HAND ----
+      { time:"11:45", name:"Super Potato Ikebukuro", note:"The Ikebukuro branch — regulars rate it OVER Akihabara's (better stock, less picked-over). Retro consoles + carts. Opens 11:00.", tags:["games"], map:"1-23-13 Higashiikebukuro, Toshima City, Tokyo", coords:[35.7312,139.7149] },
+      { time:"12:15", name:"BookOff (Sunshine 60 St)", note:"Big used-media floors — retro games/consoles at great prices, plus CDs/DVDs/figures. Opens 10:00.", tags:["games"], map:"1-22-10 Higashiikebukuro, Toshima City, Tokyo", coords:[35.7297,139.7158] },
+
+      // ---- LUNCH · omurice callback · pick one ----
+      { time:"13:00", name:"yellow (omurice)", note:"OPTION 1 — the photogenic one: soft omelette sliced open to flood the rice. Could well be your original photo. Expect a queue (up to ~45 min). Opens 11:00.", tags:["food"], map:"1-27-5 Higashiikebukuro, Toshima City, Tokyo", coords:[35.7312,139.7149], group:"lunch12", groupLabel:"Lunch · omurice · pick one" },
+      { time:"13:00", name:"Tamago-Ken (omurice)", note:"OPTION 2 — legendary value, ticket-machine omurice with hamburg + free pickles/soup. Faster, tiny, 4.7 stars. Opens 11:00.", tags:["food"], map:"1-23-8 Higashiikebukuro, Toshima City, Tokyo", coords:[35.7312,139.7149], group:"lunch12" },
+
+      // ---- AFTERNOON · more browsing (optional) ----
+      { time:"14:30", name:"Mandarake LaLaLa Ikebukuro", note:"Second-hand manga, CDs, collectibles, retro bits. Opens 12:00.", tags:["games"], map:"3-15-2 Higashiikebukuro, Toshima City, Tokyo", coords:[35.7308,139.7180] },
+      { time:"15:00", name:"Animate Ikebukuro (flagship)", note:"World's largest anime store, 9+ floors. Worth a gawk even if you don't buy. Opens 10:00.", tags:["explore"], map:"1-20-7 Higashiikebukuro, Toshima City, Tokyo", coords:[35.7303,139.7152],
+        photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Animate_Ikebukuro_20120613_1.jpg/250px-Animate_Ikebukuro_20120613_1.jpg" /* Photo: Dick Johnson, CC BY 2.0, via Wikimedia Commons */ },
+      { time:"", name:"Namjatown (optional)", note:"Namco indoor theme park in Sunshine City — retro-game maker's attraction, gyoza stadium, quirky. Entry fee. Opens 10:00.", tags:["explore"], map:"Namjatown Sunshine City Ikebukuro", coords:[35.7289,139.7197],
+        photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Namco_NamjaTown_front.jpg/250px-Namco_NamjaTown_front.jpg" /* Photo: SnowFire, CC BY 4.0, via Wikimedia Commons */ },
+
+      // ---- BACK WEST + close ----
+      { time:"18:30", name:"Ikebukuro → Shinjuku", note:"Yamanote back, ~7 min.", tags:["transit"], map:"Ikebukuro Station, Tokyo", coords:[35.7298,139.7131] },
+      { time:"20:00", name:"Golden Gai", note:"The nightly ritual.", tags:["explore"], map:"Shinjuku Golden Gai", coords:[35.6940,139.7047],
+        photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Golden_Gai%2C_Kabukicho%2C_Shinjuku_%2842385146670%29.jpg/250px-Golden_Gai%2C_Kabukicho%2C_Shinjuku_%2842385146670%29.jpg" /* Photo: Fabio Achilli, CC BY 2.0, via Wikimedia Commons */ },
     ]},
     { date:"2026-11-13", city:"Kyoto", stops:[
       { time:"08:30", name:"Arashiyama bamboo grove", note:"Early = no crowds", tags:["sight"], map:"Arashiyama Bamboo Grove", coords:[35.0167,135.6711] },
