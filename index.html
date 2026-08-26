@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#161428">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Japan Trip">
+<title>Japan · Trip Companion</title>
+
+<!-- System fonts only, no font requests. Trip data lives in data.js — see the
+     comment at the top of that file for how to add/edit days and stops.
+     Needs a connection for: the map tiles + Leaflet library below, the
+     per-day weather chip, and any Wikimedia Commons photos — everything else
+     (the itinerary itself) still works offline once the page has loaded. -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+
+<style>
+:root{
+  --bg:#F4F1EC; --ink:#161428; --sub:#736F8C; --card:#FFFFFF; --line:#E7E2D8;
+  --c-transit:#3B6FE0; --c-food:#E08A2E; --c-sight:#2E9E6B; --c-temple:#8B4FD1;
+  --c-music:#D1367B; --c-stay:#6B7280; --c-free:#B08A2E; --c-explore:#0EA5A5; --c-games:#DB4B4B;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Hiragino Sans","Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.45}
+.layout{max-width:480px;margin:0 auto;min-height:100vh;padding:0 0 48px}
+.hd{padding:calc(env(safe-area-inset-top) + 26px) 20px 46px;background:linear-gradient(135deg,#1E1B3A,#161428 60%);color:#fff;position:relative;overflow:hidden}
+.hd::after{content:"";position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(224,138,46,.35),transparent 70%)}
+.eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#B8B4D6;margin:0 0 8px;font-weight:600;position:relative}
+.title{font-weight:800;font-size:28px;line-height:1.1;margin:0;letter-spacing:-.01em;position:relative}
+.status{margin:10px 0 0;font-size:13.5px;color:#C9C6E0;position:relative}
+.status b{color:#fff;font-weight:700}
+.strip{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x proximity;padding:0 18px;-webkit-overflow-scrolling:touch;margin-top:-30px;position:relative;z-index:4}
+.strip::-webkit-scrollbar{display:none}
+.pill{scroll-snap-align:center;flex:0 0 auto;cursor:pointer;border:none;background:var(--card);border-radius:14px;padding:9px 14px;min-width:52px;text-align:center;box-shadow:0 4px 14px rgba(22,20,40,.12)}
+.pill .d{font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--sub);font-weight:700}
+.pill .n{font-size:18px;font-weight:800;color:var(--ink);line-height:1.2}
+.pill[aria-selected="true"]{background:var(--ink)}
+.pill[aria-selected="true"] .d{color:#B8B4D6}
+.pill[aria-selected="true"] .n{color:#fff}
+.pill.today::after{content:"";display:block;width:5px;height:5px;border-radius:50%;background:var(--c-food);margin:3px auto 0}
+.day{padding:22px 18px 0;animation:fade .22s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.dayhd{padding:2px 2px 16px}
+.dayhd-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.city{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--c-food);font-weight:800;margin:0 0 4px}
+.date{font-size:23px;font-weight:800;margin:0;color:var(--ink);letter-spacing:-.01em}
+.date span{color:var(--sub);font-weight:600}
+.wx{font-size:12.5px;font-weight:700;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:20px;padding:4px 10px;align-items:center;gap:5px;white-space:nowrap;box-shadow:0 2px 6px rgba(22,20,40,.05)}
+.cards{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--card);border-radius:16px;padding:14px 16px;box-shadow:0 2px 10px rgba(22,20,40,.06);border-left:4px solid var(--cat,var(--sub));position:relative}
+.card .row{display:flex;gap:12px;align-items:flex-start}
+.card .thumb{flex:0 0 52px;width:52px;height:52px;border-radius:12px;overflow:hidden;background:color-mix(in srgb, var(--cat,var(--sub)) 16%, white);display:flex;align-items:center;justify-content:center;font-size:22px}
+.card .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.card .thumb .ic{color:var(--cat,var(--sub));font-weight:700;line-height:1}
+.card .info{flex:1;min-width:0}
+.card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.card .time{font-size:12.5px;font-weight:800;color:var(--cat,var(--sub));font-variant-numeric:tabular-nums;background:color-mix(in srgb, var(--cat,var(--sub)) 14%, white);padding:3px 8px;border-radius:7px;white-space:nowrap}
+.card .name{font-size:16px;font-weight:700;margin:0;color:var(--ink)}
+a.name{display:inline-block;text-decoration:none}
+a.name:active{opacity:.6}
+.card .note{font-size:13px;color:var(--sub);margin:5px 0 0}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tag{font-size:10.5px;font-weight:700;letter-spacing:.03em;padding:3px 9px;border-radius:20px;background:color-mix(in srgb, var(--cat,var(--sub)) 12%, white);color:var(--cat,var(--sub))}
+.map{display:inline-flex;align-items:center;gap:5px;margin-top:10px;font-size:13px;font-weight:700;color:#fff;text-decoration:none;background:var(--cat,var(--ink));border-radius:10px;padding:8px 13px}
+.map svg{width:12px;height:12px}
+.card.now{outline:2px solid var(--cat,var(--c-food))}
+.group-card{padding:14px 0 12px}
+.grouphd{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--sub);font-weight:800;margin:0 0 10px;padding:0 16px}
+.grouphd-n{color:var(--cat,var(--sub));font-weight:700;text-transform:none;letter-spacing:0}
+.carousel{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.carousel::-webkit-scrollbar{display:none}
+.opt{flex:0 0 100%;scroll-snap-align:start;padding:0 16px}
+.dots{display:flex;justify-content:center;gap:6px;padding:12px 0 2px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--line);cursor:pointer;transition:all .15s ease}
+.dot.active{background:var(--cat,var(--ink));width:16px;border-radius:3px}
+.badge{display:inline-block;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:#fff;background:var(--cat,var(--c-food));border-radius:6px;padding:3px 8px;margin-bottom:2px}
+.free{text-align:center;color:var(--sub);padding:52px 10px;background:var(--card);border-radius:16px}
+.free .k{font-size:19px;font-weight:800;color:var(--ink);margin:0 0 5px}
+.foot{text-align:center;color:var(--sub);font-size:11px;letter-spacing:.04em;padding:26px 20px 0}
+:focus-visible{outline:2px solid var(--c-food);outline-offset:2px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---- view tabs (mobile: List / Map) ---- */
+.viewtabs{display:flex;gap:8px;padding:14px 18px 0}
+.vtab{flex:1;border:none;background:var(--card);color:var(--sub);font-weight:700;font-size:13px;padding:9px 0;border-radius:10px;cursor:pointer;box-shadow:0 2px 8px rgba(22,20,40,.05)}
+.vtab.active{background:var(--ink);color:#fff}
+body.view-map .day{display:none}
+
+/* ---- map ---- */
+.mapcol{display:none}
+body.view-map .mapcol{display:block;height:min(65vh,540px);margin:14px 18px 0;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(22,20,40,.08)}
+#mapPane{width:100%;height:100%;background:var(--line)}
+.leaflet-popup-content{margin:10px 12px}
+
+/* ---- private notes ---- */
+.notes{margin:26px 18px 0;background:var(--card);border-radius:16px;box-shadow:0 2px 10px rgba(22,20,40,.06);overflow:hidden}
+.notes-toggle{width:100%;text-align:left;background:none;border:none;padding:14px 16px;font:inherit;font-size:13.5px;font-weight:700;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.notes-toggle::after{content:"+";font-size:18px;color:var(--sub);font-weight:400;line-height:1}
+.notes-toggle[aria-expanded="true"]::after{content:"–"}
+.notes-panel{padding:0 16px 16px}
+.notes-hint{font-size:11.5px;color:var(--sub);margin:0 0 10px;line-height:1.5}
+.notes-panel textarea{width:100%;min-height:120px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;font-size:13.5px;color:var(--ink);background:var(--bg);resize:vertical;box-sizing:border-box}
+.notes-panel textarea:focus-visible{outline:2px solid var(--c-food);outline-offset:1px}
+.notes-saved{font-size:11px;color:var(--c-sight);margin:6px 0 0;height:14px;opacity:0;transition:opacity .3s ease}
+.notes-saved.show{opacity:1}
+
+/* ---- desktop: list + sticky map side by side, no tabs ----
+   Grid areas (not DOM order) place the map, so it can sit inline in the
+   mobile flow (right after the day list) yet become a whole side column on
+   desktop without moving a single element in the HTML. */
+@media (min-width:900px){
+  .layout{
+    display:grid; grid-template-columns:480px 1fr; gap:0 24px;
+    grid-template-areas:
+      "hd    map"
+      "strip map"
+      "tabs  map"
+      "day   map"
+      "notes map"
+      "foot  map";
+    max-width:1120px;margin:0 auto;padding:20px 24px 48px;min-height:0;
+  }
+  .hd{grid-area:hd} .strip{grid-area:strip} .viewtabs{grid-area:tabs}
+  .day{grid-area:day} .notes{grid-area:notes} .foot{grid-area:foot}
+  .viewtabs{display:none}
+  body.view-map .day{display:block}
+  .mapcol{grid-area:map;display:block;min-width:320px;position:sticky;top:20px;height:calc(100vh - 40px);border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(22,20,40,.08)}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <header class="hd">
+    <p class="eyebrow" id="eyebrow">Japan</p>
+    <h1 class="title">Trip Companion</h1>
+    <p class="status" id="status"></p>
+  </header>
+  <nav class="strip" id="strip" aria-label="Choose a day"></nav>
+  <div class="viewtabs" id="viewtabs">
+    <button class="vtab active" data-view="list">List</button>
+    <button class="vtab" data-view="map">Map</button>
+  </div>
+  <main class="day" id="day" aria-live="polite"></main>
+  <aside class="mapcol"><div id="mapPane"></div></aside>
+
+  <div class="notes">
+    <button class="notes-toggle" id="notesToggle" aria-expanded="false">Private notes</button>
+    <div class="notes-panel" id="notesPanel" hidden>
+      <p class="notes-hint">Saved only in this browser's storage on this device — never uploaded, never committed to git, not part of this public site's code. Good for the exact Airbnb address, door codes, wifi password, emergency contacts. Clearing site data or switching browsers/devices loses it, so keep a backup somewhere else too.</p>
+      <textarea id="notesText" placeholder="Airbnb address, door code, wifi password, emergency contacts…"></textarea>
+      <p class="notes-saved" id="notesSaved">Saved on this device</p>
+    </div>
+  </div>
+
+  <p class="foot">Swipe days · tap a place to open Apple Maps · weather appears ~2 weeks out, needs signal</p>
+</div>
+
+<script src="data.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+/* ============================================================================
+   App — you shouldn't need to edit this. Trip content lives in data.js.
+============================================================================ */
+const CAT = { transit:'var(--c-transit)', food:'var(--c-food)', sight:'var(--c-sight)', temple:'var(--c-temple)', music:'var(--c-music)', stay:'var(--c-stay)', free:'var(--c-free)', explore:'var(--c-explore)', games:'var(--c-games)' };
+// Fallback icon shown in the thumbnail slot when a stop has no photo.
+// One kanji per category instead of emoji — reads cleaner at small size and
+// fits the trip's theme. 駅 station/transit, 食 food, 見 sightseeing, 寺 temple,
+// 音 music, 宿 lodging, 休 free/rest, 歩 explore on foot, 遊 games/play. 地 is the
+// generic fallback.
+const ICONS = { transit:'駅', food:'食', sight:'見', temple:'寺', music:'音', stay:'宿', free:'休', explore:'歩', games:'遊' };
+const WD = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const MO = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const strip = document.getElementById('strip');
+const dayEl = document.getElementById('day');
+const statusEl = document.getElementById('status');
+document.getElementById('eyebrow').textContent =
+  "Japan · " + TRIP.days[0].date.slice(8) + "–" + TRIP.days[TRIP.days.length-1].date.slice(8) + " Nov " + TRIP.days[0].date.slice(0,4);
+
+const parse = s => { const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); };
+const todayKey = () => { const n=new Date(); return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0'); };
+const TK = todayKey();
+let current = 0;
+
+// pick default day: today if in-trip, else day 1 (before) or last (after)
+(function(){
+  const idx = TRIP.days.findIndex(d=>d.date===TK);
+  if(idx>=0){ current=idx; }
+  else { const first=parse(TRIP.days[0].date); current = (new Date()>first)? TRIP.days.length-1 : 0; }
+})();
+
+// header status
+(function(){
+  const first=parse(TRIP.days[0].date), now=new Date();
+  now.setHours(0,0,0,0);
+  const diff=Math.round((first-now)/86400000);
+  if(diff>0) statusEl.innerHTML = "<b>"+diff+" day"+(diff>1?"s":"")+"</b> to go";
+  else if(diff===0) statusEl.innerHTML = "<b>Day one.</b> Tadaima.";
+  else { const total=TRIP.days.length; const onDay=TRIP.days.findIndex(d=>d.date===TK)+1;
+         statusEl.innerHTML = onDay>0 ? ("Day <b>"+onDay+"</b> of "+total) : "Trip complete — welcome home."; }
+})();
+
+function buildStrip(){
+  strip.innerHTML='';
+  TRIP.days.forEach((d,i)=>{
+    const dt=parse(d.date);
+    const b=document.createElement('button');
+    b.className='pill'+(d.date===TK?' today':'');
+    b.setAttribute('role','tab');
+    b.setAttribute('aria-selected', i===current?'true':'false');
+    b.innerHTML='<div class="d">'+WD[dt.getDay()]+'</div><div class="n">'+dt.getDate()+'</div>';
+    b.onclick=()=>{ current=i; render(); b.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'}); };
+    strip.appendChild(b);
+  });
+}
+
+/* ---- weather (Open-Meteo, free, no key) ----
+   Forecasts only exist ~16 days out, so far-future days just show nothing —
+   the chip switches itself on automatically as each day comes into range.
+   City is guessed from the day's `city` string; add more entries below if
+   your trip visits somewhere not listed. Days with "→" in the city (travel/
+   transit days) are skipped since there's no single place to forecast for.
+   Override the guess by adding coords:[lat,lon] directly on a day in data.js. */
+const CITY_COORDS = {
+  tokyo:[35.6762,139.6503], shinjuku:[35.6762,139.6503], shibuya:[35.6762,139.6503],
+  kyoto:[35.0116,135.7681], osaka:[34.6937,135.5023], nara:[34.6851,135.8048],
+  hiroshima:[34.3853,132.4553], fukuoka:[33.5904,130.4017], sapporo:[43.0618,141.3545],
+  nagoya:[35.1815,136.9066], yokohama:[35.4437,139.6380], kanazawa:[36.5613,136.6562],
+  hakone:[35.2323,139.1069], nikko:[36.7199,139.6982], kobe:[34.6901,135.1955],
+};
+function cityCoords(d){
+  if(d.coords) return d.coords;
+  const c=(d.city||'').toLowerCase();
+  if(c.includes('→')) return null; // travel/transit day — ambiguous, skip
+  for(const key in CITY_COORDS) if(c.includes(key)) return CITY_COORDS[key];
+  return null;
+}
+function wxIcon(code){
+  if(code===0) return '☀️';
+  if(code===1||code===2) return '🌤️';
+  if(code===3) return '☁️';
+  if(code===45||code===48) return '🌫️';
+  if([51,53,55,56,57].includes(code)) return '🌦️';
+  if([61,63,65,66,67,80,81,82].includes(code)) return '🌧️';
+  if([71,73,75,77,85,86].includes(code)) return '🌨️';
+  if([95,96,99].includes(code)) return '⛈️';
+  return '🌡️';
+}
+const wxCache={};
+async function loadWeather(dateStr, coords){
+  const key=dateStr+','+coords[0]+','+coords[1];
+  if(wxCache[key]!==undefined) return wxCache[key];
+  const ctrl=new AbortController(); const timer=setTimeout(()=>ctrl.abort(),6000);
+  try{
+    const url='https://api.open-meteo.com/v1/forecast?latitude='+coords[0]+'&longitude='+coords[1]+
+      '&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&start_date='+dateStr+'&end_date='+dateStr;
+    const res=await fetch(url,{signal:ctrl.signal});
+    clearTimeout(timer);
+    if(!res.ok) return wxCache[key]=null;
+    const j=await res.json();
+    if(!j.daily||!j.daily.time||!j.daily.time.length) return wxCache[key]=null;
+    return wxCache[key]={ code:j.daily.weathercode[0], hi:Math.round(j.daily.temperature_2m_max[0]), lo:Math.round(j.daily.temperature_2m_min[0]) };
+  }catch(e){ clearTimeout(timer); return wxCache[key]=null; }
+}
+function maybeLoadWeather(d, dt){
+  const coords=cityCoords(d);
+  if(!coords) return;
+  const today0=new Date(); today0.setHours(0,0,0,0);
+  const daysOut=Math.round((dt-today0)/86400000);
+  if(daysOut<0||daysOut>15) return; // outside forecast range — stay hidden
+  const reqDay=current;
+  loadWeather(d.date,coords).then(w=>{
+    if(!w||current!==reqDay) return; // stale (user swiped away, or no data)
+    const el=document.getElementById('wx');
+    if(!el) return;
+    el.style.display='inline-flex';
+    el.textContent=wxIcon(w.code)+' '+w.hi+'°/'+w.lo+'°';
+  });
+}
+
+function mapLink(q){
+  // Apple Maps — opens the Maps app on iPhone/Mac. Tap Directions there, pick walk/transit.
+  return 'https://maps.apple.com/?q='+encodeURIComponent(q);
+}
+const PIN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>';
+
+/* ---- interactive map (Leaflet + OpenStreetMap tiles, no API key) ----
+   Desktop (≥900px): shown always, sticky, alongside the list.
+   Mobile: hidden behind a "Map" tab so the list keeps the full screen.
+   Only built when actually visible, so a mobile visitor who never taps
+   "Map" never loads any map tiles. Pins come from each stop's optional
+   coords:[lat,lon] in data.js — a stop with none just has no pin. */
+let map=null, markersLayer=null;
+const desktopMQ = window.matchMedia('(min-width:900px)');
+function mapVisible(){ return desktopMQ.matches || document.body.classList.contains('view-map'); }
+function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function catColor(cat){
+  if(!cat) return cssVar('--sub');
+  const m = cat.match(/--[\w-]+/);
+  return (m && cssVar(m[0])) || cssVar('--sub');
+}
+function ensureMap(){
+  if(map) return;
+  map = L.map('mapPane', { attributionControl:true });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom:19,
+    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+  }).addTo(map);
+  markersLayer = L.layerGroup().addTo(map);
+  map.setView([35.6762,139.6503], 12);
+}
+function updateMapMarkers(d){
+  markersLayer.clearLayers();
+  const pts=[];
+  (d.stops||[]).forEach(s=>{
+    if(!s.coords) return;
+    const cat = s.tags&&s.tags[0]&&CAT[s.tags[0]] ? CAT[s.tags[0]] : null;
+    const color = catColor(cat);
+    const icon = L.divIcon({
+      className:'',
+      html:'<div style="width:16px;height:16px;border-radius:50%;background:'+color+';border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)"></div>',
+      iconSize:[16,16], iconAnchor:[8,8]
+    });
+    const marker = L.marker(s.coords, {icon}).addTo(markersLayer);
+    const dir = s.map ? ('<br><a href="'+mapLink(s.map)+'" target="_blank" rel="noopener" style="color:'+color+';font-weight:600;text-decoration:none">Directions →</a>') : '';
+    marker.bindPopup('<div style="font:13px -apple-system,sans-serif;min-width:140px"><b>'+s.name+'</b>'+(s.time?' · '+s.time:'')+dir+'</div>');
+    pts.push(s.coords);
+  });
+  if(pts.length) map.fitBounds(pts, {padding:[30,30], maxZoom:16});
+  else map.setView([35.6762,139.6503], 12);
+}
+function maybeUpdateMap(d){
+  if(!mapVisible()) return;
+  ensureMap();
+  updateMapMarkers(d);
+  requestAnimationFrame(()=>map.invalidateSize());
+}
+
+// which stop is "now" — only on the real current day, during the trip
+function nowIndex(stops){
+  if(TRIP.days[current].date!==TK) return -1;
+  const n=new Date(); const mins=n.getHours()*60+n.getMinutes();
+  let best=-1;
+  for(let i=0;i<stops.length;i++){
+    const t=stops[i].time; if(!t) continue;
+    const [h,m]=t.split(':').map(Number); const sm=h*60+m;
+    if(sm<=mins) best=i;
+  }
+  if(best<0){ for(let i=0;i<stops.length;i++) if(stops[i].time){ return i; } }
+  return best;
+}
+
+// Inner content of one stop (thumb + name/time/note/tags/directions).
+// Shared by plain cards and by each option inside a carousel card.
+function stopRow(s, on, isNext){
+  const cat = s.tags&&s.tags[0]&&CAT[s.tags[0]] ? CAT[s.tags[0]] : null;
+  const style = cat? ' style="--cat:'+cat+'"' : '';
+  const icon = s.tags&&s.tags[0]&&ICONS[s.tags[0]] ? ICONS[s.tags[0]] : '地';
+  const thumb = s.photo ? '<img src="'+s.photo+'" alt="" loading="lazy">' : '<span class="ic">'+icon+'</span>';
+  return '<div class="row"'+style+'>'+
+      '<div class="thumb">'+thumb+'</div>'+
+      '<div class="info">'+
+        '<div class="top">'+
+          (s.map?('<a class="name" href="'+mapLink(s.map)+'" target="_blank" rel="noopener">'+s.name+'</a>')
+                :('<p class="name">'+s.name+'</p>'))+
+          (s.time?'<span class="time">'+s.time+'</span>':'')+
+        '</div>'+
+        (on?('<span class="badge">'+(isNext?'Next':'Now')+'</span>'):'')+
+        (s.note?'<p class="note">'+s.note+'</p>':'')+
+        (s.tags&&s.tags.length?('<div class="tags">'+s.tags.map(t=>'<span class="tag" style="--cat:'+(CAT[t]||'var(--sub)')+'">'+t+'</span>').join('')+'</div>'):'')+
+        (s.map?('<a class="map" href="'+mapLink(s.map)+'" target="_blank" rel="noopener">'+PIN+'Directions</a>'):'')+
+      '</div>'+
+    '</div>';
+}
+
+// Collapse consecutive stops sharing the same non-empty `group` into one block.
+function groupStops(stops){
+  const blocks=[]; let i=0;
+  while(i<stops.length){
+    const g=stops[i].group;
+    if(g){
+      const start=i, options=[];
+      while(i<stops.length && stops[i].group===g){ options.push(stops[i]); i++; }
+      blocks.push({type:'group', label:options[0].groupLabel||g, options, start});
+    } else {
+      blocks.push({type:'solo', stop:stops[i], idx:i});
+      i++;
+    }
+  }
+  return blocks;
+}
+
+function render(){
+  buildStrip();
+  const d=TRIP.days[current], dt=parse(d.date);
+  let html='<div class="dayhd"><div class="dayhd-top"><p class="city">'+d.city+'</p>'+
+    '<span class="wx" id="wx" style="display:none"></span></div>'+
+    '<p class="date">'+WD[dt.getDay()]+' <span>'+dt.getDate()+' '+MO[dt.getMonth()]+'</span></p></div>';
+
+  if(!d.stops || d.stops.length===0){
+    html+='<div class="free"><p class="k">Free day</p><p>Nothing booked. Wander, wash socks, find a café.</p></div>';
+  } else {
+    const ni=nowIndex(d.stops);
+    const isNext = ni>=0 && d.date===TK && (()=>{const n=new Date(),mins=n.getHours()*60+n.getMinutes();const t=d.stops[ni].time;if(!t)return false;const[h,m]=t.split(':').map(Number);return h*60+m>mins;})();
+    html+='<div class="cards">';
+    groupStops(d.stops).forEach(block=>{
+      if(block.type==='solo'){
+        const s=block.stop, on=block.idx===ni;
+        const cat = s.tags&&s.tags[0]&&CAT[s.tags[0]] ? CAT[s.tags[0]] : null;
+        const style = cat? ' style="--cat:'+cat+'"' : '';
+        html+='<div class="card'+(on?' now':'')+'"'+style+'>'+stopRow(s,on,isNext)+'</div>';
+      } else {
+        let groupCat=null, anyOn=false;
+        const optsHtml = block.options.map((s,j)=>{
+          const idx=block.start+j, on=idx===ni;
+          const cat = s.tags&&s.tags[0]&&CAT[s.tags[0]] ? CAT[s.tags[0]] : null;
+          if(on){ anyOn=true; groupCat=cat||groupCat; }
+          if(!groupCat) groupCat=cat;
+          return '<div class="opt">'+stopRow(s,on,isNext)+'</div>';
+        }).join('');
+        const style = groupCat? ' style="--cat:'+groupCat+'"' : '';
+        html+='<div class="card group-card'+(anyOn?' now':'')+'"'+style+'>'+
+          '<p class="grouphd">'+block.label+' <span class="grouphd-n">· '+block.options.length+'</span></p>'+
+          '<div class="carousel">'+optsHtml+'</div>'+
+          (block.options.length>1?('<div class="dots">'+block.options.map((_,j)=>'<span class="dot'+(j===0?' active':'')+'"></span>').join('')+'</div>'):'')+
+        '</div>';
+      }
+    });
+    html+='</div>';
+  }
+  dayEl.innerHTML=html;
+  maybeLoadWeather(d, dt);
+  maybeUpdateMap(d);
+  wireCarousels();
+}
+
+// keep each carousel's dots in sync with scroll position, and let taps on a
+// dot jump straight to that option
+function wireCarousels(){
+  dayEl.querySelectorAll('.carousel').forEach(car=>{
+    const dots=car.parentElement.querySelectorAll('.dot');
+    if(!dots.length) return;
+    const sync=()=>{
+      const idx=Math.round(car.scrollLeft/car.clientWidth);
+      dots.forEach((dot,i)=>dot.classList.toggle('active', i===idx));
+    };
+    car.addEventListener('scroll', ()=>requestAnimationFrame(sync), {passive:true});
+    dots.forEach((dot,i)=>dot.addEventListener('click', ()=>car.scrollTo({left:i*car.clientWidth, behavior:'smooth'})));
+  });
+}
+
+// swipe between days — ignored when the gesture starts inside a carousel,
+// so swiping through breakfast options doesn't also flip the day
+let x0=null;
+dayEl.addEventListener('touchstart',e=>{
+  if(e.target.closest('.carousel')){ x0=null; return; }
+  x0=e.touches[0].clientX;
+},{passive:true});
+dayEl.addEventListener('touchend',e=>{
+  if(x0===null)return; const dx=e.changedTouches[0].clientX-x0; x0=null;
+  if(Math.abs(dx)<50)return;
+  if(dx<0 && current<TRIP.days.length-1){current++;render();}
+  else if(dx>0 && current>0){current--;render();}
+});
+
+// mobile List/Map tabs
+const viewtabs = document.getElementById('viewtabs');
+viewtabs.querySelectorAll('.vtab').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    if(btn.classList.contains('active')) return;
+    viewtabs.querySelectorAll('.vtab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.body.classList.toggle('view-map', btn.dataset.view==='map');
+    maybeUpdateMap(TRIP.days[current]);
+  });
+});
+// crossing the desktop breakpoint can make the map visible for the first time
+desktopMQ.addEventListener('change', ()=>maybeUpdateMap(TRIP.days[current]));
+
+/* ---- private notes — localStorage only, never sent anywhere, never in git.
+   Per-device: won't sync across phones/browsers, and clearing site data or
+   using a private window loses it, so treat it as a convenience, not the
+   only copy of anything important. ---- */
+(function(){
+  const KEY='japanTripPrivateNotes';
+  const toggle=document.getElementById('notesToggle');
+  const panel=document.getElementById('notesPanel');
+  const ta=document.getElementById('notesText');
+  const saved=document.getElementById('notesSaved');
+  try{ const v=localStorage.getItem(KEY); if(v) ta.value=v; }catch(e){ /* storage unavailable — box still usable for the session */ }
+  toggle.addEventListener('click', ()=>{
+    const open = toggle.getAttribute('aria-expanded')==='true';
+    toggle.setAttribute('aria-expanded', open?'false':'true');
+    panel.hidden = open;
+  });
+  let saveTimer, flashTimer;
+  ta.addEventListener('input', ()=>{
+    clearTimeout(saveTimer);
+    saveTimer=setTimeout(()=>{
+      try{
+        localStorage.setItem(KEY, ta.value);
+        saved.classList.add('show');
+        clearTimeout(flashTimer);
+        flashTimer=setTimeout(()=>saved.classList.remove('show'), 1400);
+      }catch(e){ /* storage full/unavailable — nothing to do */ }
+    }, 300);
+  });
+})();
+
+render();
+// centre today's pill on load
+requestAnimationFrame(()=>{const t=strip.querySelector('[aria-selected="true"]');if(t)t.scrollIntoView({inline:'center',block:'nearest'});});
+</script>
+</body>
+</html>
