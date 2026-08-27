@@ -21,7 +21,7 @@
 :root{
   --bg:#F4F1EC; --ink:#161428; --sub:#736F8C; --card:#FFFFFF; --line:#E7E2D8;
   --c-transit:#3B6FE0; --c-food:#E08A2E; --c-sight:#2E9E6B; --c-temple:#8B4FD1;
-  --c-music:#D1367B; --c-stay:#6B7280; --c-free:#B08A2E; --c-explore:#0EA5A5; --c-games:#DB4B4B; --c-vintage:#8B5A2B;
+  --c-music:#D1367B; --c-stay:#6B7280; --c-free:#B08A2E; --c-explore:#0EA5A5; --c-games:#DB4B4B; --c-vintage:#8B5A2B; --c-hike:#6B8E4E;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
@@ -162,7 +162,7 @@ body.view-map .mapcol{display:flex;flex-direction:column;height:min(65vh,540px);
     <button class="vtab" data-view="map">Map</button>
   </div>
   <main class="day" id="day" aria-live="polite"></main>
-  <aside class="mapcol"><div id="mapPane"></div><p class="maplegend">Dashed line = straight-line distance, not a routed walk · small diamonds = nearby stations</p></aside>
+  <aside class="mapcol"><div id="mapPane"></div><p class="maplegend">Dashed line = straight-line distance under 3km, not a routed walk · small diamonds = nearby stations</p></aside>
 
   <div class="notes">
     <button class="notes-toggle" id="notesToggle" aria-expanded="false">Private notes</button>
@@ -186,13 +186,13 @@ body.view-map .mapcol{display:flex;flex-direction:column;height:min(65vh,540px);
 /* ============================================================================
    App — you shouldn't need to edit this. Trip content lives in data.js.
 ============================================================================ */
-const CAT = { transit:'var(--c-transit)', food:'var(--c-food)', sight:'var(--c-sight)', temple:'var(--c-temple)', music:'var(--c-music)', stay:'var(--c-stay)', free:'var(--c-free)', explore:'var(--c-explore)', games:'var(--c-games)', vintage:'var(--c-vintage)' };
+const CAT = { transit:'var(--c-transit)', food:'var(--c-food)', sight:'var(--c-sight)', temple:'var(--c-temple)', music:'var(--c-music)', stay:'var(--c-stay)', free:'var(--c-free)', explore:'var(--c-explore)', games:'var(--c-games)', vintage:'var(--c-vintage)', hike:'var(--c-hike)' };
 // Fallback icon shown in the thumbnail slot when a stop has no photo.
 // One kanji per category instead of emoji — reads cleaner at small size and
 // fits the trip's theme. 駅 station/transit, 食 food, 見 sightseeing, 寺 temple,
 // 音 music, 宿 lodging, 休 free/rest, 歩 explore on foot, 遊 games/play. 地 is the
 // generic fallback.
-const ICONS = { transit:'駅', food:'食', sight:'見', temple:'寺', music:'音', stay:'宿', free:'休', explore:'歩', games:'遊', vintage:'古' };
+const ICONS = { transit:'駅', food:'食', sight:'見', temple:'寺', music:'音', stay:'宿', free:'休', explore:'歩', games:'遊', vintage:'古', hike:'山' };
 const WD = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 const MO = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const strip = document.getElementById('strip');
@@ -251,6 +251,7 @@ const CITY_COORDS = {
   hiroshima:[34.3853,132.4553], fukuoka:[33.5904,130.4017], sapporo:[43.0618,141.3545],
   nagoya:[35.1815,136.9066], yokohama:[35.4437,139.6380], kanazawa:[36.5613,136.6562],
   hakone:[35.2323,139.1069], nikko:[36.7199,139.6982], kobe:[34.6901,135.1955],
+  isehara:[35.4319,139.2380], tsukuba:[36.2131,140.1013], nokogiriyama:[35.1603,139.8261],
 };
 function cityCoords(d){
   if(d.coords) return d.coords;
@@ -363,6 +364,9 @@ const STATIONS = [
   {name:'Jimbocho Station', coords:[35.6960,139.7584]},
   {name:'Ikebukuro Station', coords:[35.7298,139.7131]},
   {name:'Nakano Station', coords:[35.7058,139.6658]},
+  {name:'Isehara Station', coords:[35.3960,139.3135]},
+  {name:'Tsukuba Station', coords:[36.0826,140.1112]},
+  {name:'Hama-Kanaya Station', coords:[35.1681,139.8224]},
   {name:'Tokyo Station', coords:[35.6827,139.7651]},
   {name:'Kyoto Station', coords:[34.9846,135.7584]},
   {name:'Inari Station', coords:[34.9667,135.7708]},
@@ -389,11 +393,17 @@ function updateMapMarkers(d, ni, isNext){
     seq.push(s.coords);
   });
 
-  // dashed line + distance/time label between each consecutive pair of stops
+  // dashed line + distance/time label between each consecutive pair of stops —
+  // only within plausible walking range. Day-trip stops can be 50+ km apart
+  // (a train ride, not a walk), and "~719 min" is a silly, useless thing to
+  // show, so anything past 3 km is obviously a transit leg and gets no line.
+  const WALKABLE_M = 3000;
   for(let i=0;i<seq.length-1;i++){
     const a=seq[i], b=seq[i+1];
+    const dist=haversine(a,b);
+    if(dist>WALKABLE_M) continue;
     L.polyline([a,b], {color:cssVar('--sub'), weight:2, dashArray:'4,7', opacity:.55}).addTo(markersLayer);
-    const dist=haversine(a,b), mins=Math.max(1, Math.round(dist/80));
+    const mins=Math.max(1, Math.round(dist/80));
     const mid=[(a[0]+b[0])/2, (a[1]+b[1])/2];
     L.marker(mid, {
       icon: L.divIcon({className:'', html:'<div class="distlabel">'+fmtDist(dist)+' · ~'+mins+' min</div>', iconSize:[0,0], iconAnchor:[0,0]}),
@@ -420,9 +430,14 @@ function updateMapMarkers(d, ni, isNext){
 function maybeUpdateMap(d){
   if(!mapVisible()) return;
   ensureMap();
-  const ni = nowIndex(d.stops||[]);
-  updateMapMarkers(d, ni, computeIsNext(d, ni));
-  requestAnimationFrame(()=>map.invalidateSize());
+  // Fix the container size FIRST (it may just have gone from hidden/0×0 to
+  // visible, e.g. switching to the mobile "Map" tab) — otherwise fitBounds
+  // below computes against a stale size and lands on the wrong zoom/center.
+  map.invalidateSize();
+  requestAnimationFrame(()=>{
+    const ni = nowIndex(d.stops||[]);
+    updateMapMarkers(d, ni, computeIsNext(d, ni));
+  });
 }
 
 // which stop is "now" — only on the real current day, during the trip

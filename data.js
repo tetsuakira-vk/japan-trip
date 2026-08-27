@@ -29,7 +29,7 @@
        - map   : what to search in Apple Maps (place name + city works best).
                  Leave "" if there's nothing to map (e.g. "check in", "pack").
        - tags  : any of food, sight, temple, music, transit, stay, free, explore,
-                 games, vintage — or make up your own; unrecognised tags just render grey
+                 games, vintage, hike — or make up your own; unrecognised tags render grey
                  (handy for a one-off status flag like "closed").
        - photo : optional. A direct image URL shown as a thumbnail on the
                  card. Prefer stable, openly-licensed sources (e.g. Wikimedia
@@ -186,6 +186,43 @@ const TRIP = {
       { time:"18:30", name:"Nakano → Shinjuku", note:"Chūō line rapid, 1 stop, ~4 min (or Chūō-Sōbu back via Ōkubo).", tags:["transit"], map:"Nakano Station, Tokyo", coords:[35.7058,139.6658] },
       { time:"20:00", name:"Golden Gai", note:"The nightly ritual.", tags:["explore"], map:"Shinjuku Golden Gai", coords:[35.6940,139.7047],
         photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Golden_Gai%2C_Kabukicho%2C_Shinjuku_%2842385146670%29.jpg/250px-Golden_Gai%2C_Kabukicho%2C_Shinjuku_%2842385146670%29.jpg" /* Photo: Fabio Achilli, CC BY 2.0, via Wikimedia Commons */ },
+    ]},
+    { date:"2026-11-14", city:"Day trip · Mt Oyama (Isehara)", coords:[35.4319,139.2380], stops:[
+      { time:"08:30", name:"Shinjuku Stn — Odakyu line", note:"Walk/1 stop from the flat to Shinjuku. Buy the Tanzawa-Oyama Freepass (丹沢・大山フリーパス) at the Odakyu counter — the 'A' ticket includes the Oyama Cable Car, covers round-trip train + bus + cable car at a discount.", tags:["transit"], map:"Shinjuku Station, Tokyo", coords:[35.6923,139.6995] },
+      { time:"08:50", name:"Odakyu → Isehara", note:"Odakyu Odawara Line, EXPRESS (急行) or RAPID EXPRESS (快速急行) toward Odawara/Hon-Atsugi. Get off at ISEHARA (~60–65 min). Avoid the Local (too slow). Romancecar is faster but a paid reserved seat.", tags:["transit"], map:"Isehara Station, Kanagawa", coords:[35.3960,139.3135] },
+      { time:"10:00", name:"Isehara → 'Oyama Cable' bus", note:"North Exit (北口), bus stop #4, Kanachu bus bound for 大山ケーブル (Oyama Cable). Ride to the LAST stop, ~25 min.", tags:["transit"], map:"Isehara Station, Kanagawa", coords:[35.3960,139.3135] },
+      { time:"10:35", name:"Koma-sando approach walk", note:"~15 min up a stepped lane of tofu shops & souvenir stalls to the cable car station. (This is where you'll want lunch later.)", tags:["explore"], map:"Oyama Koma-sando, Isehara", coords:[35.4206,139.2550] },
+      { time:"10:55", name:"Oyama Cable Car ↑", note:"Oyama-Cable Station → Afuri-jinja Station, ~6 min. Hop off midway at Ōyama-dera if you want the maple tunnel.", tags:["transit"], map:"Oyama Cable Station, Isehara", coords:[35.4278,139.2445] },
+      { time:"11:10", name:"Ōyama-dera (midway)", note:"755 AD temple; the red maples over its steps are the famous autumn shot. Cable car's middle stop.", tags:["temple"], map:"Oyama-dera Temple, Isehara", coords:[35.4296,139.2410],
+        photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/%E5%A4%A7%E5%B1%B1%E5%AF%BA%E3%81%A8%E7%B4%85%E8%91%89%2C_Oyamadera_temple_and_colored_leaves_-_panoramio.jpg/250px-%E5%A4%A7%E5%B1%B1%E5%AF%BA%E3%81%A8%E7%B4%85%E8%91%89%2C_Oyamadera_temple_and_colored_leaves_-_panoramio.jpg" /* Photo: xe zna, CC BY-SA 3.0, via Wikimedia Commons */ },
+      { time:"11:45", name:"Ōyama Afuri Shrine (lower)", note:"The payoff: Michelin 2-star view — Fuji, Enoshima, Sagami Bay on a clear day. Teahouse Sekison (Michelin) alongside for matcha + spring-water coffee.", tags:["temple"], map:"Oyama Afuri Shrine, Isehara", coords:[35.4319,139.2380] },
+      { time:"", name:"Optional summit hike", note:"From left of the shrine, ~1.5–2 hrs up (and same down) to the 1,252m top. Skip if legs/time are tight — the shrine view already delivers.", tags:["hike"], map:"Mount Oyama summit, Isehara", coords:[35.4408,139.2313] },
+      { time:"13:30", name:"Tofu lunch on Koma-sando", note:"Ōyama tofu is the speciality (made from the mountain's spring water) — tofu kaiseki at the inns lining the approach. Freepass gets discounts at some.", tags:["food"], map:"Oyama Koma-sando, Isehara", coords:[35.4206,139.2550] },
+      { time:"15:30", name:"Return → Shinjuku", note:"Cable down → bus to Isehara → Odakyu Express back to Shinjuku (~60 min). Reverse of the morning.", tags:["transit"], map:"Isehara Station, Kanagawa", coords:[35.3960,139.3135] },
+    ]},
+    { date:"2026-11-15", city:"Day trip · Mt Tsukuba (Ibaraki)", coords:[36.2131,140.1013], stops:[
+      { time:"08:30", name:"Ōkubo → Akihabara", note:"JR Chūō-Sōbu line (yellow) from Ōkubo Stn (2 min from flat), direct to Akihabara, ~18 min.", tags:["transit"], map:"Okubo Station, Shinjuku, Tokyo", coords:[35.7022,139.6952] },
+      { time:"09:00", name:"Akihabara → Tsukuba (TX)", note:"Buy the Mt. Tsukuba Ticket (筑波山きっぷ) at the TX counter — covers TX round-trip + shuttle bus + cable car + ropeway. ¥4,300 from Akihabara (your note said ~¥4,000 — close, price has crept up slightly). Then Tsukuba Express RAPID (快速) to the terminus, TSUKUBA, ~45 min.", tags:["transit"], map:"Akihabara Station, Tokyo", coords:[35.6990,139.7737] },
+      { time:"09:50", name:"Tsukuba Stn → shuttle bus", note:"Tsukubasan Shuttle from the bus terminal to '筑波山神社入口' (Tsukubasan-jinja-iriguchi), ~40 min.", tags:["transit"], map:"Tsukuba Station, Ibaraki", coords:[36.0826,140.1112] },
+      { time:"10:40", name:"Tsukubasan Shrine (base)", note:"Ancient shrine at the foot, known for matchmaking. Cable car station is just behind it.", tags:["temple"], map:"Tsukubasan Shrine, Ibaraki", coords:[36.2131,140.1013] },
+      { time:"11:15", name:"Cable Car ↑ (Miyawaki)", note:"Funicular Miyawaki → Miyukigahara (near the summit ridge), ~8 min. Red/green cars for the seasons.", tags:["transit"], map:"Tsukubasan Cable Car Miyawaki Station, Ibaraki", coords:[36.2254,140.1067] },
+      { time:"11:40", name:"Nantai & Nyotai peaks", note:"Two summits ~15 min apart along the ridge (Nyotai 877m is the higher, confirmed — Nantai is 871m). Oddly-shaped sacred rocks, the Gama-ishi toad rock, Kantō plain + Skytree + Fuji views.", tags:["hike"], map:"Mount Tsukuba Nyotaisan, Ibaraki", coords:[36.2250,140.1065],
+        photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Summit_%40_Nyotai_Peak_%40_Mount_Tsukuba_%289975577435%29.jpg/250px-Summit_%40_Nyotai_Peak_%40_Mount_Tsukuba_%289975577435%29.jpg" /* Photo: Guilhem Vellut, CC BY 2.0, via Wikimedia Commons */ },
+      { time:"13:30", name:"Ropeway ↓ (Nyotai)", note:"Swiss-made ropeway Nyotaisan → Tsutsujigaoka, ~6 min — down a different face from the cable car so you see both.", tags:["transit"], map:"Tsukubasan Ropeway Nyotaisan Station, Ibaraki", coords:[36.2224,140.1127] },
+      { time:"14:00", name:"Tsutsujigaoka → Tsukuba Stn", note:"Shuttle bus back to Tsukuba Station, ~50 min.", tags:["transit"], map:"Tsutsujigaoka, Tsukuba, Ibaraki", coords:[36.2198,140.1189] },
+      { time:"15:30", name:"Return → flat", note:"TX back Tsukuba → Akihabara (~45 min), then Chūō-Sōbu → Ōkubo (~18 min).", tags:["transit"], map:"Tsukuba Station, Ibaraki", coords:[36.0826,140.1112] },
+    ]},
+    { date:"2026-11-16", city:"Day trip · Nokogiriyama (Chiba)", coords:[35.1603,139.8261], stops:[
+      { time:"08:00", name:"Shinjuku → Tokyo Station", note:"JR Chūō line RAPID, ~14 min. (Early start — this is the long one.)", tags:["transit"], map:"Tokyo Station", coords:[35.6827,139.7651] },
+      { time:"08:30", name:"Tokyo → Hama-Kanaya (浜金谷)", note:"JR Uchibō Line down the Bōsō coast. Practical route: Tokyo → change at KIMITSU (君津) onto a Tateyama-bound local → get off at HAMA-KANAYA. ~2 hrs. Exact trains/transfers shift by timetable — check Apple Maps/Navitime that morning.", tags:["transit"], map:"Hama-Kanaya Station, Chiba", coords:[35.1681,139.8224] },
+      { time:"10:40", name:"Walk to the ropeway", note:"~8 min from Hama-Kanaya station to the Nokogiriyama Ropeway base.", tags:["explore"], map:"Nokogiriyama Ropeway, Chiba", coords:[35.1603,139.8261] },
+      { time:"11:00", name:"Nokogiriyama Ropeway ↑", note:"~4 min to the summit. Views back over Tokyo Bay to Fuji on a clear day. Checked: the ropeway's only known annual closure is mid-Jan–mid-Feb (13 Jan–13 Feb 2026), not November — should be running, but a quick check nearer the date is still sensible for any unscheduled maintenance.", tags:["transit"], map:"Nokogiriyama Ropeway, Chiba", coords:[35.1603,139.8261] },
+      { time:"11:20", name:"Jigoku Nozoki (Hell Peek)", note:"The famous rock ledge jutting over a sheer drop — the money shot. Inside the Nihon-ji grounds (entry fee).", tags:["sight"], map:"Jigoku Nozoki Nokogiriyama, Chiba", coords:[35.1586,139.8289],
+        photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Jigoku_nozoki_at_Nokogiriyama02.JPG/250px-Jigoku_nozoki_at_Nokogiriyama02.JPG" /* Photo: Captain76, CC BY-SA 3.0, via Wikimedia Commons */ },
+      { time:"12:00", name:"Nihon-ji Great Buddha", note:"Confirmed: at 31.05m this really is bigger than both Nara's (18.18m) and Kamakura's (13.35m) — biggest carved-in-place Buddha in Japan. Plus 1,500 carved arhat statues and the Hyaku-shaku Kannon. Lots of stairs across the grounds.", tags:["temple"], map:"Nihon-ji Temple, Nokogiriyama, Chiba", coords:[35.1566,139.8332],
+        photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Nihonji_daibutsu.jpg/250px-Nihonji_daibutsu.jpg" /* Photo: Emily Zarndt, CC BY-SA 3.0, via Wikimedia Commons */ },
+      { time:"14:00", name:"Seafood lunch — Kanaya port", note:"Hama-Kanaya is a fishing port — fresh seafood by the harbour before the long ride back.", tags:["food"], map:"Hama-Kanaya, Chiba", coords:[35.1681,139.8224] },
+      { time:"15:30", name:"Return → Shinjuku", note:"Reverse: Hama-Kanaya → change at Kimitsu → Tokyo Station → Chūō line to Shinjuku. ~2 hrs.", tags:["transit"], map:"Hama-Kanaya Station, Chiba", coords:[35.1681,139.8224] },
     ]},
     // …add the rest of your days here (through 2026-11-24).
   ]
