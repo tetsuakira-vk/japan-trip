@@ -224,6 +224,34 @@ const TRIP = {
       { time:"14:00", name:"Seafood lunch — Kanaya port", note:"Hama-Kanaya is a fishing port — fresh seafood by the harbour before the long ride back.", tags:["food"], map:"Hama-Kanaya, Chiba", coords:[35.1681,139.8224] },
       { time:"15:30", name:"Return → Shinjuku", note:"Reverse: Hama-Kanaya → change at Kimitsu → Tokyo Station → Chūō line to Shinjuku. ~2 hrs.", tags:["transit"], map:"Hama-Kanaya Station, Chiba", coords:[35.1681,139.8224] },
     ]},
+    { date:"2026-11-17", city:"Day trip · Nikko (shrines + falls)", coords:[36.7576,139.5991], stops:[
+      // ---- GET THERE ----
+      { time:"06:45", name:"Flat → Asakusa", note:"WEEKDAY routing: JR Yamanote Shin-Ōkubo → Ueno (~20 min), then Tokyo Metro Ginza line Ueno → Asakusa (~5 min). If you move this to a WEEKEND, skip all this and take the direct Shinjuku→Tobu-Nikko train instead — confirmed real (Shinjuku dep ~07:30, arr Tobu-Nikko ~09:28, matches your 07:31/09:27 almost exactly) — reserved seats, book ahead.", tags:["transit"], map:"Asakusa Station, Tokyo", coords:[35.7093,139.7969] },
+      { time:"07:50", name:"Asakusa → Tobu-Nikko (Spacia X)", note:"Tobu limited express, ~1h50, arrives ~09:39. All reserved — book the seat in advance. Sit right-side for river/mountain views near the end. Confirmed real service (Standard seat ¥3,340 one-way from Asakusa).", tags:["transit"], map:"Tobu-Nikko Station, 4-3 Matsubaracho, Nikko, Tochigi", coords:[36.7475,139.6198] },
+      { time:"09:40", name:"Tobu-Nikko Station — sort buses", note:"Coin lockers for bags. Buy your bus pass here: the 'World Heritage' loop pass (世界遺産めぐり手形 — confirmed real) covers the shrines; the wider 2-day area pass also covers the Chūzenji/Kegon buses — get that one since you're doing the falls. Toshogu tickets sold here too.", tags:["transit"], map:"Tobu-Nikko Station, 4-3 Matsubaracho, Nikko, Tochigi", coords:[36.7475,139.6198] },
+
+      // ---- SHRINE ZONE (walkable cluster) ----
+      { time:"10:00", name:"Shinkyō Bridge", note:"The iconic vermilion arch over the Daiya river — the gateway shot into the shrine area. ~10 min bus (or 20-25 min walk) from the station.", tags:["sight"], map:"Shinkyo Bridge, Kamihatsuishimachi, Nikko, Tochigi", coords:[36.7533,139.6040],
+        photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/NikkoShinkyo5593.jpg/250px-NikkoShinkyo5593.jpg" /* Photo: Fg2, public domain, via Wikimedia Commons */ },
+      { time:"10:20", name:"Rinnō-ji (Sanbutsudō)", note:"Nikko's great temple — the main hall holds three 7.5m gilded Buddha statues. Founded 766 AD. Opens 8:00.", tags:["temple"], map:"Rinnoji Temple, 2300 Sannai, Nikko, Tochigi", coords:[36.7547,139.6008] },
+      { time:"10:50", name:"Nikkō Tōshōgū", note:"THE one: Tokugawa Ieyasu's mausoleum, 500+ carvings incl. the sleeping cat & three wise monkeys, gold leaf everywhere, cedar avenues. Give it 1.5 hrs. Opens 9:00.", tags:["temple"], map:"Nikko Toshogu, 2301 Sannai, Nikko, Tochigi", coords:[36.7576,139.5991],
+        photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/The_Three_Wise_Monkeys%2C_Nikk%C5%8D_T%C5%8Dsh%C5%8D-g%C5%AB%3B_April_2018.jpg/250px-The_Three_Wise_Monkeys%2C_Nikk%C5%8D_T%C5%8Dsh%C5%8D-g%C5%AB%3B_April_2018.jpg" /* Photo: Ray in Manila, CC BY 2.0, via Wikimedia Commons */ },
+      { time:"12:20", name:"Futarasan Shrine", note:"Quieter, right beside Toshogu — mountain-deity shrine in cedar forest, ¥300. A calm breather after the crowds.", tags:["temple"], map:"Nikko Futarasan Shrine, 2307 Sannai, Nikko, Tochigi", coords:[36.7584,139.5967] },
+      { time:"12:45", name:"Taiyū-in (Iemitsu mausoleum)", note:"The sleeper hit — Iemitsu's tomb, deliberately more restrained than Toshogu but many say more beautiful, and far less crowded. Elaborate gates in the forest.", tags:["temple"], map:"Taiyuin, 2300 Sannai, Nikko, Tochigi", coords:[36.7580,139.5959] },
+      { time:"13:30", name:"Lunch — yuba near the shrines", note:"Nikko's speciality is yuba (tofu skin) — several spots around the shrine approach & Shinkyō. Quick bowl before heading up the mountain.", tags:["food"], map:"Shinkyo Bridge, Kamihatsuishimachi, Nikko, Tochigi", coords:[36.7533,139.6040] },
+
+      // ---- MOUNTAIN ZONE (bus up the Irohazaka) ----
+      { time:"14:15", name:"Bus up to Chūzenji / Kegon", note:"Tobu bus (Chūzenji-Onsen / Yumoto line) from the shrine-area stop up the Irohazaka hairpins, ~40-45 min. Roughly every 30-60 min — check the posted times. Covered by the area pass.", tags:["transit"], map:"Kegon Falls, 2479-2 Chugushi, Nikko, Tochigi", coords:[36.7382,139.5036] },
+      { time:"", name:"Akechidaira Ropeway (optional)", note:"Partway up — a 3-min ropeway to a lookout over Kegon Falls AND Lake Chūzenji together. Confirmed real, ¥600 adult. Worth it on a clear day IF time allows; skip if running late.", tags:["sight"], map:"Akechidaira Ropeway, Hosoomachi, Nikko, Tochigi", coords:[36.7373,139.5161] },
+      { time:"15:00", name:"Kegon Falls", note:"97m plunge fed by Lake Chūzenji — one of Japan's great waterfalls. Pay ¥600 for the elevator down to the base observation deck (confirmed current price). Cold in the tunnels, take a layer.", tags:["sight"], map:"Kegon Falls, 2479-2 Chugushi, Nikko, Tochigi", coords:[36.7382,139.5036],
+        photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/%E7%B4%85%E8%91%89%E3%81%AE%E8%8F%AF%E5%8E%B3%E3%81%AE%E6%BB%9D.jpg/250px-%E7%B4%85%E8%91%89%E3%81%AE%E8%8F%AF%E5%8E%B3%E3%81%AE%E6%BB%9D.jpg" /* Photo: くろふね (Jranar), CC BY-SA 4.0, via Wikimedia Commons */ },
+      { time:"15:45", name:"Lake Chūzenji", note:"Right by the falls — a serene highland lake ringed by mountains, formed by an old eruption of Mt Nantai. Lakeside stroll, grilled ayu fish from stalls.", tags:["sight"], map:"Lake Chuzenji, Nikko, Tochigi", coords:[36.7368,139.4769],
+        photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Mount_nantai_and_lake_chuzenji.jpg/250px-Mount_nantai_and_lake_chuzenji.jpg" /* Photo: Uraomote yamaneko, CC BY-SA 3.0, via Wikimedia Commons */ },
+      { time:"16:45", name:"Bus back down → Tobu-Nikko", note:"~45 min back down the Irohazaka to the station. Aim for a bus that gets you back for your return train.", tags:["transit"], map:"Tobu-Nikko Station, 4-3 Matsubaracho, Nikko, Tochigi", coords:[36.7475,139.6198] },
+
+      // ---- RETURN ----
+      { time:"18:00", name:"Tobu-Nikko → home", note:"Limited express back to Asakusa (~1h50) then Metro/JR to the flat — or, if you came on the weekend direct train, straight back to Shinjuku (last direct dep reportedly ~16:38 — not independently re-verified, so on a weekend leave the lake a bit earlier and double check that time).", tags:["transit"], map:"Tobu-Nikko Station, 4-3 Matsubaracho, Nikko, Tochigi", coords:[36.7475,139.6198] },
+    ]},
     // …add the rest of your days here (through 2026-11-24).
   ]
 };

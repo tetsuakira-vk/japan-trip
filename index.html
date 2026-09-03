@@ -367,6 +367,8 @@ const STATIONS = [
   {name:'Isehara Station', coords:[35.3960,139.3135]},
   {name:'Tsukuba Station', coords:[36.0826,140.1112]},
   {name:'Hama-Kanaya Station', coords:[35.1681,139.8224]},
+  {name:'Asakusa Station', coords:[35.7093,139.7969]},
+  {name:'Tobu-Nikko Station', coords:[36.7475,139.6198]},
   {name:'Tokyo Station', coords:[35.6827,139.7651]},
   {name:'Kyoto Station', coords:[34.9846,135.7584]},
   {name:'Inari Station', coords:[34.9667,135.7708]},
@@ -433,11 +435,13 @@ function maybeUpdateMap(d){
   // Fix the container size FIRST (it may just have gone from hidden/0×0 to
   // visible, e.g. switching to the mobile "Map" tab) — otherwise fitBounds
   // below computes against a stale size and lands on the wrong zoom/center.
+  // Deliberately synchronous, no requestAnimationFrame: invalidateSize()
+  // forces its own layout read so the fix is already in effect by the next
+  // line, and rAF can be throttled/delayed (backgrounded tab, low-power
+  // mode) in a way that silently drops the marker update entirely.
   map.invalidateSize();
-  requestAnimationFrame(()=>{
-    const ni = nowIndex(d.stops||[]);
-    updateMapMarkers(d, ni, computeIsNext(d, ni));
-  });
+  const ni = nowIndex(d.stops||[]);
+  updateMapMarkers(d, ni, computeIsNext(d, ni));
 }
 
 // which stop is "now" — only on the real current day, during the trip
