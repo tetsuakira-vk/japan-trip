@@ -29,7 +29,8 @@
        - map   : what to search in Apple Maps (place name + city works best).
                  Leave "" if there's nothing to map (e.g. "check in", "pack").
        - tags  : any of food, sight, temple, music, transit, stay, free, explore,
-                 games, vintage, hike — or make up your own; unrecognised tags render grey
+                 games, vintage, hike, coffee, bar — or make up your own; unrecognised
+                 tags render grey
                  (handy for a one-off status flag like "closed").
        - photo : optional. A direct image URL shown as a thumbnail on the
                  card. Prefer stable, openly-licensed sources (e.g. Wikimedia
@@ -288,6 +289,21 @@ const TRIP = {
       { time:"18:30", name:"Kōenji → Shinjuku", note:"JR Chūō line, ~10 min, direct.", tags:["transit"], map:"Koenji Station, Tokyo", coords:[35.7053,139.6500] },
       { time:"20:00", name:"Golden Gai", note:"The nightly ritual (or stay in Kōenji — your call).", tags:["explore"], map:"Shinjuku Golden Gai", coords:[35.6940,139.7047],
         photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Golden_Gai%2C_Kabukicho%2C_Shinjuku_%2842385146670%29.jpg/250px-Golden_Gai%2C_Kabukicho%2C_Shinjuku_%2842385146670%29.jpg" /* Photo: Fabio Achilli, CC BY 2.0, via Wikimedia Commons */ },
+    ]},
+    { date:"2026-11-20", city:"Tokyo · Shinjuku (coffee, gacha, jazz)", stops:[
+      // ---- MORNING ----
+      { time:"09:00", name:"Coffee Times", note:"Your retro-kissaten opener — Shōwa decor, smoky wood, quiet jazz, red velvet, cheap breakfast set. Founded 1967 (fixed — you had 1964). Opens 8:00. ~10 min from the flat.", tags:["coffee"], map:"Shinjuku 3-35-11, Times Bldg 1F, Shinjuku, Tokyo", coords:[35.6912,139.7041] },
+
+      // ---- MIDDLE OF THE DAY ----
+      { time:"11:30", name:"C-Pla Gachapon", note:"Big, dense capsule-toy hall — reckoned the most machine choice in Shinjuku. Bring 100-yen coins (change machines inside). 2 min from Coffee Times. Opens 10:00. Confirmed address matches exactly.", tags:["games"], map:"Shinjuku 3-15-11, Adhoc Shinjuku 1F/M2F, Shinjuku, Tokyo", coords:[35.6928,139.7033] },
+      { time:"", name:"Lunch + afternoon — TBC", note:"Your call. Nearby if you want it: Kabukichō Tower food hall (neon festival-themed, B1/1F), Godzilla Head at Hotel Gracery, Don Quijote Kabukichō chaos, or the Samurai/Ninja experience. All ≤10 min walk.", tags:["explore"], map:"Tokyu Kabukicho Tower, Kabukicho 1-29-1, Shinjuku, Tokyo", coords:[35.6945,139.7027],
+        photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/%E6%9D%B1%E6%80%A5%E6%AD%8C%E8%88%9E%E4%BC%8E%E7%94%BA%E3%82%BF%E3%83%AF%E3%83%BC_Tokyu_Kabukicho_Tower.jpg/250px-%E6%9D%B1%E6%80%A5%E6%AD%8C%E8%88%9E%E4%BC%8E%E7%94%BA%E3%82%BF%E3%83%AF%E3%83%BC_Tokyu_Kabukicho_Tower.jpg" /* Photo: しっかかもっかか, CC BY-SA 4.0, via Wikimedia Commons */ },
+
+      // ---- EVENING ----
+      { time:"17:30", name:"Jazz Spot Eagle (Yotsuya)", note:"Big-room jazz kissa — serious sound system, modern jazz from ~5:30pm, no-talking listening hours. Solo-perfect. Local name is 'いーぐる' (Jazz Kissa Eagle), same address. ~10 min from the flat. Closed Sundays (this is a Fri, fine). Confirmed address matches exactly.", tags:["music"], map:"Yotsuya 1-8-6, Horina Bldg B1F, Shinjuku, Tokyo", coords:[35.6847,139.7291] },
+
+      // ---- NIGHT ----
+      { time:"20:00", name:"Solo-Only Bar (Hitori Shinjuku)", note:"Kabukichō bar that only admits solo drinkers — everyone's alone with the same intent, easy mixed-language chat with the bartender + other travellers. Cover scales with time. From 6pm, 7F-A. Confirmed address matches exactly.", tags:["bar"], map:"Kabukicho 2-46-7, 3rd Hirasawa Bldg 7F-A, Shinjuku, Tokyo", coords:[35.6945,139.7027] },
     ]},
     // …add the rest of your days here (through 2026-11-24).
   ]
