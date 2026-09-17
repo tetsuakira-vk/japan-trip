@@ -81,6 +81,8 @@ a.name:active{opacity:.6}
 .free{text-align:center;color:var(--sub);padding:52px 10px;background:var(--card);border-radius:16px}
 .free .k{font-size:19px;font-weight:800;color:var(--ink);margin:0 0 5px}
 .foot{text-align:center;color:var(--sub);font-size:11px;letter-spacing:.04em;padding:26px 20px 0}
+.daymap{display:inline-flex;align-items:center;gap:5px;margin-top:9px;font-size:12px;font-weight:700;color:var(--c-food);text-decoration:none}
+.daymap svg{width:11px;height:11px}
 :focus-visible{outline:2px solid var(--c-food);outline-offset:2px;border-radius:6px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
@@ -510,7 +512,8 @@ function render(){
   const d=TRIP.days[current], dt=parse(d.date);
   let html='<div class="dayhd"><div class="dayhd-top"><p class="city">'+d.city+'</p>'+
     '<span class="wx" id="wx" style="display:none"></span></div>'+
-    '<p class="date">'+WD[dt.getDay()]+' <span>'+dt.getDate()+' '+MO[dt.getMonth()]+'</span></p></div>';
+    '<p class="date">'+WD[dt.getDay()]+' <span>'+dt.getDate()+' '+MO[dt.getMonth()]+'</span></p>'+
+    '<a class="daymap" href="map/map.html?area='+encodeURIComponent(d.city)+'">'+PIN+'View on map</a></div>';
 
   if(!d.stops || d.stops.length===0){
     html+='<div class="free"><p class="k">Free day</p><p>Nothing booked. Wander, wash socks, find a café.</p></div>';

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#161428">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Japan Map">
+<link rel="manifest" href="./manifest.webmanifest">
+<title>Japan · Offline Map</title>
+
+<!-- Fully offline: every asset here (style, basemap tiles, fonts, data, this
+     script) is vendored/baked locally and served same-origin — no CDN, no
+     runtime network calls. See ../Makefile / scripts/ for how these are
+     built. Japanese/CJK text renders via the device's own installed fonts
+     (localIdeographFontFamily below), not a vendored glyph pack — that's
+     what keeps this offline-able at all (a full CJK glyph set would be
+     tens of thousands of PBF files). -->
+<link href="./vendor/maplibre-gl.css" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F1EC; --ink:#161428; --sub:#736F8C; --card:#FFFFFF; --line:#E7E2D8;
+  --c-konbini:#2e7d32; --c-ramen:#c62828; --c-onsen:#00838f;
+  --c-vending:#6a1b9a; --c-atm:#1565c0; --c-japaneat:#ef6c00;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Hiragino Sans","Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.layout{display:flex;flex-direction:column;height:100%}
+.hd{padding:calc(env(safe-area-inset-top) + 14px) 16px 12px;background:linear-gradient(135deg,#1E1B3A,#161428 60%);color:#fff;display:flex;align-items:center;gap:10px;flex:0 0 auto;position:relative;z-index:5}
+.back{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,.12);color:#fff;text-decoration:none}
+.back svg{width:16px;height:16px}
+.hdtext{min-width:0}
+.eyebrow{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#B8B4D6;margin:0 0 2px;font-weight:600}
+.title{font-weight:800;font-size:17px;line-height:1.1;margin:0;letter-spacing:-.01em}
+
+.mapwrap{position:relative;flex:1 1 auto;min-height:0}
+#map{position:absolute;inset:0}
+
+.chips{position:absolute;top:10px;left:10px;right:10px;display:flex;gap:6px;overflow-x:auto;z-index:4;-webkit-overflow-scrolling:touch}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:none;cursor:pointer;font:inherit;font-size:12px;font-weight:700;padding:7px 12px;border-radius:20px;background:#fff;color:var(--sub);box-shadow:0 2px 10px rgba(22,20,40,.18);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.chip .dot{width:8px;height:8px;border-radius:50%;background:var(--dot,var(--sub))}
+.chip[aria-pressed="true"]{background:var(--ink);color:#fff}
+.chip[aria-pressed="true"] .dot{background:var(--dot,#fff)}
+
+.maplibregl-popup-content{padding:12px 14px;border-radius:12px;font-family:inherit;box-shadow:0 6px 22px rgba(22,20,40,.22)}
+.pop-name{font-size:14.5px;font-weight:800;color:var(--ink);margin:0}
+.pop-ja{font-size:12px;color:var(--sub);margin:2px 0 0}
+.pop-meta{font-size:11.5px;color:var(--sub);margin:6px 0 0;text-transform:capitalize}
+.pop-credit{font-size:10.5px;color:var(--sub);margin:4px 0 0;font-style:italic}
+.pop-link{display:inline-flex;align-items:center;gap:5px;margin-top:9px;font-size:12.5px;font-weight:700;color:#fff;text-decoration:none;background:var(--ink);border-radius:9px;padding:7px 11px}
+.pop-link svg{width:11px;height:11px}
+
+.legend{position:absolute;left:10px;bottom:calc(env(safe-area-inset-bottom) + 10px);z-index:4;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);border-radius:12px;padding:8px 10px;font-size:10px;color:var(--sub);max-width:200px;box-shadow:0 2px 10px rgba(22,20,40,.12)}
+.legend a{color:inherit}
+
+.loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:6;font-size:13px;color:var(--sub);font-weight:700;transition:opacity .25s ease}
+.loading.hide{opacity:0;pointer-events:none}
+</style>
+</head>
+<body>
+<div class="layout">
+  <header class="hd">
+    <a class="back" href="../index.html" aria-label="Back to itinerary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
+    <div class="hdtext">
+      <p class="eyebrow">Japan</p>
+      <h1 class="title" id="title">Offline Map</h1>
+    </div>
+  </header>
+  <div class="mapwrap">
+    <div id="map"></div>
+    <div class="chips" id="chips"></div>
+    <p class="legend" id="legend">Konbini · Ramen · Onsen · Vending · ATM — mine, from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors. Orange — restaurant picks from a friend's <a href="https://japaneat.com" target="_blank" rel="noopener">Japan Eat</a> list.</p>
+    <div class="loading" id="loading">Loading offline map…</div>
+  </div>
+</div>
+
+<script src="./vendor/pmtiles.js"></script>
+<script type="module">
+import { Map as MLMap, NavigationControl, GeolocateControl, Popup, addProtocol } from './vendor/maplibre-gl.mjs';
+
+const protocol = new pmtiles.Protocol();
+addProtocol('pmtiles', protocol.tile);
+
+const CATEGORY_COLOR = {
+  konbini: '#2e7d32', ramen: '#c62828', onsen: '#00838f',
+  vending: '#6a1b9a', atm: '#1565c0', japaneat: '#ef6c00',
+};
+const CATEGORY_LABEL = {
+  konbini: 'Konbini', ramen: 'Ramen', onsen: 'Onsen / Sento',
+  vending: 'Vending', atm: 'ATM', japaneat: 'JapanEats',
+};
+const PIN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>';
+
+// ?area=<name> from the itinerary's per-day "View on map" link centres here
+// instead of the default Shinjuku view. AREA_CENTERS is filled in from
+// trip.locations.json below (falls back to the default if not found).
+const params = new URLSearchParams(location.search);
+const areaParam = (params.get('area') || '').toLowerCase();
+let center = [139.6987, 35.6944], zoom = 13.5; // Shinjuku, default
+document.getElementById('title').textContent = areaParam ? 'Map · ' + params.get('area') : 'Offline Map';
+
+// MapLibre v6 requires the style's `sprite` URL to be absolute — a plain
+// relative path throws "Invalid sprite URL ... must be absolute" and the
+// sprite (small POI icons baked into the basemap, e.g. park/university)
+// silently never loads. style.json is baked with a relative path (portable
+// across hosts), so resolve it to this page's own origin before handing the
+// style off to MapLibre.
+const style = await fetch('./style.json').then((r) => r.json());
+if (style.sprite) style.sprite = new URL(style.sprite, location.href).href;
+
+const map = new MLMap({
+  container: 'map',
+  style,
+  center, zoom,
+  // The built-in attribution control's compact/expanded behaviour collides
+  // with our own legend box at phone widths — fold both credits into that
+  // legend instead (see #legend below) and skip the control entirely.
+  attributionControl: false,
+  localIdeographFontFamily: "'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif",
+});
+map.addControl(new NavigationControl(), 'top-right');
+map.addControl(new GeolocateControl({ trackUserLocation: true, showUserHeading: true }), 'top-right');
+
+const ACTIVE = new Set(['konbini', 'ramen', 'onsen', 'vending', 'atm', 'japaneat']);
+
+function applyFilters() {
+  const poiCats = [...ACTIVE].filter((c) => c !== 'japaneat');
+  if (map.getLayer('pois-pts')) {
+    map.setFilter('pois-pts', ['in', ['get', 'category'], ['literal', poiCats]]);
+  }
+  if (map.getLayer('japaneat-pts')) {
+    map.setLayoutProperty('japaneat-pts', 'visibility', ACTIVE.has('japaneat') ? 'visible' : 'none');
+  }
+}
+
+function buildChips() {
+  const wrap = document.getElementById('chips');
+  wrap.innerHTML = '';
+  for (const cat of Object.keys(CATEGORY_LABEL)) {
+    const btn = document.createElement('button');
+    btn.className = 'chip';
+    btn.type = 'button';
+    btn.setAttribute('aria-pressed', 'true');
+    btn.style.setProperty('--dot', CATEGORY_COLOR[cat]);
+    btn.innerHTML = '<span class="dot"></span>' + CATEGORY_LABEL[cat];
+    btn.addEventListener('click', () => {
+      const on = btn.getAttribute('aria-pressed') === 'true';
+      btn.setAttribute('aria-pressed', String(!on));
+      if (on) ACTIVE.delete(cat); else ACTIVE.add(cat);
+      applyFilters();
+    });
+    wrap.appendChild(btn);
+  }
+}
+
+function popupHTML(p) {
+  const ja = p.name_ja && p.name_ja !== p.name ? `<p class="pop-ja">${p.name_ja}</p>` : '';
+  const foreignAtm = p.category === 'atm' && (p.foreign_atm === true || p.foreign_atm === 'true');
+  const meta = [CATEGORY_LABEL[p.category] || p.category, foreignAtm ? 'takes foreign cards' : null]
+    .filter(Boolean).join(' · ');
+  const credit = p.source === 'japaneat' ? '<p class="pop-credit">Pick from Japan Eat (japaneat.com)</p>' : '';
+  return `<p class="pop-name">${p.name}</p>${ja}<p class="pop-meta">${meta}</p>${credit}` +
+    `<a class="pop-link" href="${p.apple}" target="_blank" rel="noopener">${PIN}Open in Maps</a>`;
+}
+
+map.on('load', async () => {
+  const [pois, japaneat, locations] = await Promise.all([
+    fetch('./data/pois.geojson').then((r) => r.json()),
+    fetch('./data/japaneat.geojson').then((r) => r.json()),
+    fetch('./data/trip.locations.json').then((r) => r.json()).catch(() => null),
+  ]);
+
+  if (areaParam && locations) {
+    // Prefer each day's own "__day" summary point (export_locations.mjs
+    // writes one per day from data.js's day.coords) over an arbitrary stop —
+    // a day-trip's city label covers its whole route, so the first matching
+    // stop can be a transit leg still in Tokyo rather than the destination.
+    const entries = Object.entries(locations).filter(([, l]) => (l.city || '').toLowerCase().includes(areaParam));
+    const dayMatch = entries.find(([k]) => k.endsWith('__day'));
+    const match = (dayMatch || entries[0] || [])[1];
+    if (match) map.jumpTo({ center: [match.lon, match.lat], zoom: 14.5 });
+  }
+
+  map.addSource('pois', { type: 'geojson', data: pois });
+  map.addSource('japaneat', { type: 'geojson', data: japaneat });
+
+  const colorExpr = ['match', ['get', 'category'], ...Object.entries(CATEGORY_COLOR).flat(), '#555'];
+  map.addLayer({
+    id: 'pois-pts', type: 'circle', source: 'pois',
+    paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 3, 16, 7],
+      'circle-color': colorExpr, 'circle-stroke-width': 1.5, 'circle-stroke-color': '#fff' },
+  });
+  map.addLayer({
+    id: 'japaneat-pts', type: 'circle', source: 'japaneat',
+    paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 4, 16, 8],
+      'circle-color': CATEGORY_COLOR.japaneat, 'circle-stroke-width': 1.5, 'circle-stroke-color': '#fff' },
+  });
+
+  for (const id of ['pois-pts', 'japaneat-pts']) {
+    map.on('click', id, (e) => {
+      const p = e.features[0].properties;
+      new Popup({ closeButton: false, maxWidth: '260px' }).setLngLat(e.lngLat).setHTML(popupHTML(p)).addTo(map);
+    });
+    map.on('mouseenter', id, () => (map.getCanvas().style.cursor = 'pointer'));
+    map.on('mouseleave', id, () => (map.getCanvas().style.cursor = ''));
+  }
+
+  buildChips();
+  applyFilters();
+  document.getElementById('loading').classList.add('hide');
+});
+map.on('error', (e) => console.error('map error', e.error && e.error.message));
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch((e) => console.warn('sw register failed', e));
+}
+</script>
+</body>
+</html>

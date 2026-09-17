@@ -1,0 +1,1285 @@
+{
+  "2026-11-09__0": {
+    "name": "Check in + unpack",
+    "lat": 35.703,
+    "lon": 139.6986,
+    "day": "2026-11-09",
+    "city": "Tokyo · Shinjuku — Arrival",
+    "tags": [
+      "stay"
+    ]
+  },
+  "2026-11-09__1": {
+    "name": "Explore the neighbourhood",
+    "lat": 35.7013,
+    "lon": 139.7001,
+    "day": "2026-11-09",
+    "city": "Tokyo · Shinjuku — Arrival",
+    "tags": [
+      "explore"
+    ]
+  },
+  "2026-11-10__2": {
+    "name": "Yayoiken (Hyakunincho)",
+    "lat": 35.703,
+    "lon": 139.6986,
+    "day": "2026-11-10",
+    "city": "Tokyo · Shinjuku — First full day",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-10__3": {
+    "name": "Flipper's (Shinjuku)",
+    "lat": 35.6888,
+    "lon": 139.7042,
+    "day": "2026-11-10",
+    "city": "Tokyo · Shinjuku — First full day",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-10__4": {
+    "name": "Shinjuku Gyoen",
+    "lat": 35.6851,
+    "lon": 139.7095,
+    "day": "2026-11-10",
+    "city": "Tokyo · Shinjuku — First full day",
+    "tags": [
+      "sight"
+    ]
+  },
+  "2026-11-10__5": {
+    "name": "Tokyo Metro Gov't Building",
+    "lat": 35.6895,
+    "lon": 139.6917,
+    "day": "2026-11-10",
+    "city": "Tokyo · Shinjuku — First full day",
+    "tags": [
+      "sight"
+    ]
+  },
+  "2026-11-10__6": {
+    "name": "Fuunji",
+    "lat": 35.6869,
+    "lon": 139.6967,
+    "day": "2026-11-10",
+    "city": "Tokyo · Shinjuku — First full day",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-10__7": {
+    "name": "Menya Musashi",
+    "lat": 35.6956,
+    "lon": 139.6977,
+    "day": "2026-11-10",
+    "city": "Tokyo · Shinjuku — First full day",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-10__8": {
+    "name": "Shin-Ōkubo Koreatown",
+    "lat": 35.7013,
+    "lon": 139.7001,
+    "day": "2026-11-10",
+    "city": "Tokyo · Shinjuku — First full day",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-10__9": {
+    "name": "Union Record Shinjuku",
+    "lat": 35.6903,
+    "lon": 139.7031,
+    "day": "2026-11-10",
+    "city": "Tokyo · Shinjuku — First full day",
+    "tags": [
+      "music"
+    ]
+  },
+  "2026-11-10__10": {
+    "name": "Kabukicho + Godzilla Head",
+    "lat": 35.6956,
+    "lon": 139.7023,
+    "day": "2026-11-10",
+    "city": "Tokyo · Shinjuku — First full day",
+    "tags": [
+      "explore"
+    ]
+  },
+  "2026-11-10__11": {
+    "name": "Omoide Yokocho",
+    "lat": 35.6929,
+    "lon": 139.6996,
+    "day": "2026-11-10",
+    "city": "Tokyo · Shinjuku — First full day",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-10__12": {
+    "name": "Hanazono Shrine",
+    "lat": 35.6933,
+    "lon": 139.7058,
+    "day": "2026-11-10",
+    "city": "Tokyo · Shinjuku — First full day",
+    "tags": [
+      "sight"
+    ]
+  },
+  "2026-11-11__13": {
+    "name": "Bam Bi Coffee",
+    "lat": 35.6997,
+    "lon": 139.7053,
+    "day": "2026-11-11",
+    "city": "Tokyo · Akihabara — Games & CDs",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-11__14": {
+    "name": "Ōkubo Stn → Akihabara",
+    "lat": 35.7022,
+    "lon": 139.6952,
+    "day": "2026-11-11",
+    "city": "Tokyo · Akihabara — Games & CDs",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-11__15": {
+    "name": "Super Potato",
+    "lat": 35.6984,
+    "lon": 139.7709,
+    "day": "2026-11-11",
+    "city": "Tokyo · Akihabara — Games & CDs",
+    "tags": [
+      "games"
+    ]
+  },
+  "2026-11-11__16": {
+    "name": "Retro Game Camp",
+    "lat": 35.7013,
+    "lon": 139.7705,
+    "day": "2026-11-11",
+    "city": "Tokyo · Akihabara — Games & CDs",
+    "tags": [
+      "games"
+    ]
+  },
+  "2026-11-11__17": {
+    "name": "Trader HQ",
+    "lat": 35.7014,
+    "lon": 139.7724,
+    "day": "2026-11-11",
+    "city": "Tokyo · Akihabara — Games & CDs",
+    "tags": [
+      "games"
+    ]
+  },
+  "2026-11-11__18": {
+    "name": "Mandarake Complex",
+    "lat": 35.7013,
+    "lon": 139.7705,
+    "day": "2026-11-11",
+    "city": "Tokyo · Akihabara — Games & CDs",
+    "tags": [
+      "games"
+    ]
+  },
+  "2026-11-11__19": {
+    "name": "Beep Akihabara",
+    "lat": 35.7007,
+    "lon": 139.774,
+    "day": "2026-11-11",
+    "city": "Tokyo · Akihabara — Games & CDs",
+    "tags": [
+      "games",
+      "closed"
+    ]
+  },
+  "2026-11-11__20": {
+    "name": "Kyushu Jangara (Akihabara)",
+    "lat": 35.7013,
+    "lon": 139.7705,
+    "day": "2026-11-11",
+    "city": "Tokyo · Akihabara — Games & CDs",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-11__21": {
+    "name": "Ramen Jiro (Kanda Jinbocho)",
+    "lat": 35.696,
+    "lon": 139.7584,
+    "day": "2026-11-11",
+    "city": "Tokyo · Akihabara — Games & CDs",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-11__22": {
+    "name": "Disk Union Ochanomizu",
+    "lat": 35.6983,
+    "lon": 139.7639,
+    "day": "2026-11-11",
+    "city": "Tokyo · Akihabara — Games & CDs",
+    "tags": [
+      "music"
+    ]
+  },
+  "2026-11-11__23": {
+    "name": "Akihabara → Shinjuku",
+    "lat": 35.699,
+    "lon": 139.7737,
+    "day": "2026-11-11",
+    "city": "Tokyo · Akihabara — Games & CDs",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-11__24": {
+    "name": "Golden Gai",
+    "lat": 35.694,
+    "lon": 139.7047,
+    "day": "2026-11-11",
+    "city": "Tokyo · Akihabara — Games & CDs",
+    "tags": [
+      "explore"
+    ]
+  },
+  "2026-11-12__25": {
+    "name": "The Bake Factory (Shin-Ōkubo)",
+    "lat": 35.703,
+    "lon": 139.6986,
+    "day": "2026-11-12",
+    "city": "Tokyo · Ikebukuro — Arcades & retro",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-12__26": {
+    "name": "Shin-Ōkubo → Ikebukuro",
+    "lat": 35.7013,
+    "lon": 139.7001,
+    "day": "2026-11-12",
+    "city": "Tokyo · Ikebukuro — Arcades & retro",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-12__27": {
+    "name": "Round1 Ikebukuro",
+    "lat": 35.7312,
+    "lon": 139.7149,
+    "day": "2026-11-12",
+    "city": "Tokyo · Ikebukuro — Arcades & retro",
+    "tags": [
+      "games"
+    ]
+  },
+  "2026-11-12__28": {
+    "name": "Taito Station Ikebukuro",
+    "lat": 35.7302,
+    "lon": 139.7094,
+    "day": "2026-11-12",
+    "city": "Tokyo · Ikebukuro — Arcades & retro",
+    "tags": [
+      "games"
+    ]
+  },
+  "2026-11-12__29": {
+    "name": "GiGO Ikebukuro",
+    "lat": 35.7312,
+    "lon": 139.7149,
+    "day": "2026-11-12",
+    "city": "Tokyo · Ikebukuro — Arcades & retro",
+    "tags": [
+      "games"
+    ]
+  },
+  "2026-11-12__30": {
+    "name": "Super Potato Ikebukuro",
+    "lat": 35.7312,
+    "lon": 139.7149,
+    "day": "2026-11-12",
+    "city": "Tokyo · Ikebukuro — Arcades & retro",
+    "tags": [
+      "games"
+    ]
+  },
+  "2026-11-12__31": {
+    "name": "BookOff (Sunshine 60 St)",
+    "lat": 35.7297,
+    "lon": 139.7158,
+    "day": "2026-11-12",
+    "city": "Tokyo · Ikebukuro — Arcades & retro",
+    "tags": [
+      "games"
+    ]
+  },
+  "2026-11-12__32": {
+    "name": "yellow (omurice)",
+    "lat": 35.7312,
+    "lon": 139.7149,
+    "day": "2026-11-12",
+    "city": "Tokyo · Ikebukuro — Arcades & retro",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-12__33": {
+    "name": "Tamago-Ken (omurice)",
+    "lat": 35.7312,
+    "lon": 139.7149,
+    "day": "2026-11-12",
+    "city": "Tokyo · Ikebukuro — Arcades & retro",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-12__34": {
+    "name": "Mandarake LaLaLa Ikebukuro",
+    "lat": 35.7308,
+    "lon": 139.718,
+    "day": "2026-11-12",
+    "city": "Tokyo · Ikebukuro — Arcades & retro",
+    "tags": [
+      "games"
+    ]
+  },
+  "2026-11-12__35": {
+    "name": "Animate Ikebukuro (flagship)",
+    "lat": 35.7303,
+    "lon": 139.7152,
+    "day": "2026-11-12",
+    "city": "Tokyo · Ikebukuro — Arcades & retro",
+    "tags": [
+      "explore"
+    ]
+  },
+  "2026-11-12__36": {
+    "name": "Namjatown (optional)",
+    "lat": 35.7289,
+    "lon": 139.7197,
+    "day": "2026-11-12",
+    "city": "Tokyo · Ikebukuro — Arcades & retro",
+    "tags": [
+      "explore"
+    ]
+  },
+  "2026-11-12__37": {
+    "name": "Ikebukuro → Shinjuku",
+    "lat": 35.7298,
+    "lon": 139.7131,
+    "day": "2026-11-12",
+    "city": "Tokyo · Ikebukuro — Arcades & retro",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-12__38": {
+    "name": "Golden Gai",
+    "lat": 35.694,
+    "lon": 139.7047,
+    "day": "2026-11-12",
+    "city": "Tokyo · Ikebukuro — Arcades & retro",
+    "tags": [
+      "explore"
+    ]
+  },
+  "2026-11-13__39": {
+    "name": "The Bake Factory (Shin-Ōkubo)",
+    "lat": 35.703,
+    "lon": 139.6986,
+    "day": "2026-11-13",
+    "city": "Tokyo · Nakano — Vintage & games",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-13__40": {
+    "name": "Ōkubo → Nakano",
+    "lat": 35.7022,
+    "lon": 139.6952,
+    "day": "2026-11-13",
+    "city": "Tokyo · Nakano — Vintage & games",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-13__41": {
+    "name": "Nakano Sun Mall",
+    "lat": 35.7079,
+    "lon": 139.6693,
+    "day": "2026-11-13",
+    "city": "Tokyo · Nakano — Vintage & games",
+    "tags": [
+      "explore"
+    ]
+  },
+  "2026-11-13__42": {
+    "name": "Chūka Soba Aoba (honten)",
+    "lat": 35.7079,
+    "lon": 139.6693,
+    "day": "2026-11-13",
+    "city": "Tokyo · Nakano — Vintage & games",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-13__43": {
+    "name": "Nakano Broadway",
+    "lat": 35.709,
+    "lon": 139.6658,
+    "day": "2026-11-13",
+    "city": "Tokyo · Nakano — Vintage & games",
+    "tags": [
+      "games"
+    ]
+  },
+  "2026-11-13__44": {
+    "name": "Mandarake Nakano",
+    "lat": 35.709,
+    "lon": 139.6658,
+    "day": "2026-11-13",
+    "city": "Tokyo · Nakano — Vintage & games",
+    "tags": [
+      "games"
+    ]
+  },
+  "2026-11-13__45": {
+    "name": "TreFacStyle Nakano",
+    "lat": 35.7041,
+    "lon": 139.6691,
+    "day": "2026-11-13",
+    "city": "Tokyo · Nakano — Vintage & games",
+    "tags": [
+      "vintage"
+    ]
+  },
+  "2026-11-13__46": {
+    "name": "Little Bird",
+    "lat": 35.7079,
+    "lon": 139.6693,
+    "day": "2026-11-13",
+    "city": "Tokyo · Nakano — Vintage & games",
+    "tags": [
+      "vintage"
+    ]
+  },
+  "2026-11-13__47": {
+    "name": "Broadway vintage + backstreets",
+    "lat": 35.709,
+    "lon": 139.6658,
+    "day": "2026-11-13",
+    "city": "Tokyo · Nakano — Vintage & games",
+    "tags": [
+      "vintage"
+    ]
+  },
+  "2026-11-13__48": {
+    "name": "Nakano → Shinjuku",
+    "lat": 35.7058,
+    "lon": 139.6658,
+    "day": "2026-11-13",
+    "city": "Tokyo · Nakano — Vintage & games",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-13__49": {
+    "name": "Golden Gai",
+    "lat": 35.694,
+    "lon": 139.7047,
+    "day": "2026-11-13",
+    "city": "Tokyo · Nakano — Vintage & games",
+    "tags": [
+      "explore"
+    ]
+  },
+  "2026-11-14__50": {
+    "name": "Shinjuku Stn — Odakyu line",
+    "lat": 35.6923,
+    "lon": 139.6995,
+    "day": "2026-11-14",
+    "city": "Day trip · Mt Oyama (Isehara)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-14__51": {
+    "name": "Odakyu → Isehara",
+    "lat": 35.396,
+    "lon": 139.3135,
+    "day": "2026-11-14",
+    "city": "Day trip · Mt Oyama (Isehara)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-14__52": {
+    "name": "Isehara → 'Oyama Cable' bus",
+    "lat": 35.396,
+    "lon": 139.3135,
+    "day": "2026-11-14",
+    "city": "Day trip · Mt Oyama (Isehara)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-14__53": {
+    "name": "Koma-sando approach walk",
+    "lat": 35.4206,
+    "lon": 139.255,
+    "day": "2026-11-14",
+    "city": "Day trip · Mt Oyama (Isehara)",
+    "tags": [
+      "explore"
+    ]
+  },
+  "2026-11-14__54": {
+    "name": "Oyama Cable Car ↑",
+    "lat": 35.4278,
+    "lon": 139.2445,
+    "day": "2026-11-14",
+    "city": "Day trip · Mt Oyama (Isehara)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-14__55": {
+    "name": "Ōyama-dera (midway)",
+    "lat": 35.4296,
+    "lon": 139.241,
+    "day": "2026-11-14",
+    "city": "Day trip · Mt Oyama (Isehara)",
+    "tags": [
+      "temple"
+    ]
+  },
+  "2026-11-14__56": {
+    "name": "Ōyama Afuri Shrine (lower)",
+    "lat": 35.4319,
+    "lon": 139.238,
+    "day": "2026-11-14",
+    "city": "Day trip · Mt Oyama (Isehara)",
+    "tags": [
+      "temple"
+    ]
+  },
+  "2026-11-14__57": {
+    "name": "Optional summit hike",
+    "lat": 35.4408,
+    "lon": 139.2313,
+    "day": "2026-11-14",
+    "city": "Day trip · Mt Oyama (Isehara)",
+    "tags": [
+      "hike"
+    ]
+  },
+  "2026-11-14__58": {
+    "name": "Tofu lunch on Koma-sando",
+    "lat": 35.4206,
+    "lon": 139.255,
+    "day": "2026-11-14",
+    "city": "Day trip · Mt Oyama (Isehara)",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-14__59": {
+    "name": "Return → Shinjuku",
+    "lat": 35.396,
+    "lon": 139.3135,
+    "day": "2026-11-14",
+    "city": "Day trip · Mt Oyama (Isehara)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-14__day": {
+    "name": "Day trip · Mt Oyama (Isehara)",
+    "lat": 35.4319,
+    "lon": 139.238,
+    "day": "2026-11-14",
+    "city": "Day trip · Mt Oyama (Isehara)",
+    "tags": []
+  },
+  "2026-11-15__60": {
+    "name": "Ōkubo → Akihabara",
+    "lat": 35.7022,
+    "lon": 139.6952,
+    "day": "2026-11-15",
+    "city": "Day trip · Mt Tsukuba (Ibaraki)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-15__61": {
+    "name": "Akihabara → Tsukuba (TX)",
+    "lat": 35.699,
+    "lon": 139.7737,
+    "day": "2026-11-15",
+    "city": "Day trip · Mt Tsukuba (Ibaraki)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-15__62": {
+    "name": "Tsukuba Stn → shuttle bus",
+    "lat": 36.0826,
+    "lon": 140.1112,
+    "day": "2026-11-15",
+    "city": "Day trip · Mt Tsukuba (Ibaraki)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-15__63": {
+    "name": "Tsukubasan Shrine (base)",
+    "lat": 36.2131,
+    "lon": 140.1013,
+    "day": "2026-11-15",
+    "city": "Day trip · Mt Tsukuba (Ibaraki)",
+    "tags": [
+      "temple"
+    ]
+  },
+  "2026-11-15__64": {
+    "name": "Cable Car ↑ (Miyawaki)",
+    "lat": 36.2254,
+    "lon": 140.1067,
+    "day": "2026-11-15",
+    "city": "Day trip · Mt Tsukuba (Ibaraki)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-15__65": {
+    "name": "Nantai & Nyotai peaks",
+    "lat": 36.225,
+    "lon": 140.1065,
+    "day": "2026-11-15",
+    "city": "Day trip · Mt Tsukuba (Ibaraki)",
+    "tags": [
+      "hike"
+    ]
+  },
+  "2026-11-15__66": {
+    "name": "Ropeway ↓ (Nyotai)",
+    "lat": 36.2224,
+    "lon": 140.1127,
+    "day": "2026-11-15",
+    "city": "Day trip · Mt Tsukuba (Ibaraki)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-15__67": {
+    "name": "Tsutsujigaoka → Tsukuba Stn",
+    "lat": 36.2198,
+    "lon": 140.1189,
+    "day": "2026-11-15",
+    "city": "Day trip · Mt Tsukuba (Ibaraki)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-15__68": {
+    "name": "Return → flat",
+    "lat": 36.0826,
+    "lon": 140.1112,
+    "day": "2026-11-15",
+    "city": "Day trip · Mt Tsukuba (Ibaraki)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-15__day": {
+    "name": "Day trip · Mt Tsukuba (Ibaraki)",
+    "lat": 36.2131,
+    "lon": 140.1013,
+    "day": "2026-11-15",
+    "city": "Day trip · Mt Tsukuba (Ibaraki)",
+    "tags": []
+  },
+  "2026-11-16__69": {
+    "name": "Shinjuku → Tokyo Station",
+    "lat": 35.6827,
+    "lon": 139.7651,
+    "day": "2026-11-16",
+    "city": "Day trip · Nokogiriyama (Chiba)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-16__70": {
+    "name": "Tokyo → Hama-Kanaya (浜金谷)",
+    "lat": 35.1681,
+    "lon": 139.8224,
+    "day": "2026-11-16",
+    "city": "Day trip · Nokogiriyama (Chiba)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-16__71": {
+    "name": "Walk to the ropeway",
+    "lat": 35.1603,
+    "lon": 139.8261,
+    "day": "2026-11-16",
+    "city": "Day trip · Nokogiriyama (Chiba)",
+    "tags": [
+      "explore"
+    ]
+  },
+  "2026-11-16__72": {
+    "name": "Nokogiriyama Ropeway ↑",
+    "lat": 35.1603,
+    "lon": 139.8261,
+    "day": "2026-11-16",
+    "city": "Day trip · Nokogiriyama (Chiba)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-16__73": {
+    "name": "Jigoku Nozoki (Hell Peek)",
+    "lat": 35.1586,
+    "lon": 139.8289,
+    "day": "2026-11-16",
+    "city": "Day trip · Nokogiriyama (Chiba)",
+    "tags": [
+      "sight"
+    ]
+  },
+  "2026-11-16__74": {
+    "name": "Nihon-ji Great Buddha",
+    "lat": 35.1566,
+    "lon": 139.8332,
+    "day": "2026-11-16",
+    "city": "Day trip · Nokogiriyama (Chiba)",
+    "tags": [
+      "temple"
+    ]
+  },
+  "2026-11-16__75": {
+    "name": "Seafood lunch — Kanaya port",
+    "lat": 35.1681,
+    "lon": 139.8224,
+    "day": "2026-11-16",
+    "city": "Day trip · Nokogiriyama (Chiba)",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-16__76": {
+    "name": "Return → Shinjuku",
+    "lat": 35.1681,
+    "lon": 139.8224,
+    "day": "2026-11-16",
+    "city": "Day trip · Nokogiriyama (Chiba)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-16__day": {
+    "name": "Day trip · Nokogiriyama (Chiba)",
+    "lat": 35.1603,
+    "lon": 139.8261,
+    "day": "2026-11-16",
+    "city": "Day trip · Nokogiriyama (Chiba)",
+    "tags": []
+  },
+  "2026-11-17__77": {
+    "name": "Flat → Asakusa",
+    "lat": 35.7093,
+    "lon": 139.7969,
+    "day": "2026-11-17",
+    "city": "Day trip · Nikko (shrines + falls)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-17__78": {
+    "name": "Asakusa → Tobu-Nikko (Spacia X)",
+    "lat": 36.7475,
+    "lon": 139.6198,
+    "day": "2026-11-17",
+    "city": "Day trip · Nikko (shrines + falls)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-17__79": {
+    "name": "Tobu-Nikko Station — sort buses",
+    "lat": 36.7475,
+    "lon": 139.6198,
+    "day": "2026-11-17",
+    "city": "Day trip · Nikko (shrines + falls)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-17__80": {
+    "name": "Shinkyō Bridge",
+    "lat": 36.7533,
+    "lon": 139.604,
+    "day": "2026-11-17",
+    "city": "Day trip · Nikko (shrines + falls)",
+    "tags": [
+      "sight"
+    ]
+  },
+  "2026-11-17__81": {
+    "name": "Rinnō-ji (Sanbutsudō)",
+    "lat": 36.7547,
+    "lon": 139.6008,
+    "day": "2026-11-17",
+    "city": "Day trip · Nikko (shrines + falls)",
+    "tags": [
+      "temple"
+    ]
+  },
+  "2026-11-17__82": {
+    "name": "Nikkō Tōshōgū",
+    "lat": 36.7576,
+    "lon": 139.5991,
+    "day": "2026-11-17",
+    "city": "Day trip · Nikko (shrines + falls)",
+    "tags": [
+      "temple"
+    ]
+  },
+  "2026-11-17__83": {
+    "name": "Futarasan Shrine",
+    "lat": 36.7584,
+    "lon": 139.5967,
+    "day": "2026-11-17",
+    "city": "Day trip · Nikko (shrines + falls)",
+    "tags": [
+      "temple"
+    ]
+  },
+  "2026-11-17__84": {
+    "name": "Taiyū-in (Iemitsu mausoleum)",
+    "lat": 36.758,
+    "lon": 139.5959,
+    "day": "2026-11-17",
+    "city": "Day trip · Nikko (shrines + falls)",
+    "tags": [
+      "temple"
+    ]
+  },
+  "2026-11-17__85": {
+    "name": "Lunch — yuba near the shrines",
+    "lat": 36.7533,
+    "lon": 139.604,
+    "day": "2026-11-17",
+    "city": "Day trip · Nikko (shrines + falls)",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-17__86": {
+    "name": "Bus up to Chūzenji / Kegon",
+    "lat": 36.7382,
+    "lon": 139.5036,
+    "day": "2026-11-17",
+    "city": "Day trip · Nikko (shrines + falls)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-17__87": {
+    "name": "Akechidaira Ropeway (optional)",
+    "lat": 36.7373,
+    "lon": 139.5161,
+    "day": "2026-11-17",
+    "city": "Day trip · Nikko (shrines + falls)",
+    "tags": [
+      "sight"
+    ]
+  },
+  "2026-11-17__88": {
+    "name": "Kegon Falls",
+    "lat": 36.7382,
+    "lon": 139.5036,
+    "day": "2026-11-17",
+    "city": "Day trip · Nikko (shrines + falls)",
+    "tags": [
+      "sight"
+    ]
+  },
+  "2026-11-17__89": {
+    "name": "Lake Chūzenji",
+    "lat": 36.7368,
+    "lon": 139.4769,
+    "day": "2026-11-17",
+    "city": "Day trip · Nikko (shrines + falls)",
+    "tags": [
+      "sight"
+    ]
+  },
+  "2026-11-17__90": {
+    "name": "Bus back down → Tobu-Nikko",
+    "lat": 36.7475,
+    "lon": 139.6198,
+    "day": "2026-11-17",
+    "city": "Day trip · Nikko (shrines + falls)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-17__91": {
+    "name": "Tobu-Nikko → home",
+    "lat": 36.7475,
+    "lon": 139.6198,
+    "day": "2026-11-17",
+    "city": "Day trip · Nikko (shrines + falls)",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-17__day": {
+    "name": "Day trip · Nikko (shrines + falls)",
+    "lat": 36.7576,
+    "lon": 139.5991,
+    "day": "2026-11-17",
+    "city": "Day trip · Nikko (shrines + falls)",
+    "tags": []
+  },
+  "2026-11-18__92": {
+    "name": "Breakfast near the flat",
+    "lat": 35.703,
+    "lon": 139.6986,
+    "day": "2026-11-18",
+    "city": "Tokyo · Shibuya + Harajuku",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-18__93": {
+    "name": "Shin-Ōkubo → Shibuya",
+    "lat": 35.7013,
+    "lon": 139.7001,
+    "day": "2026-11-18",
+    "city": "Tokyo · Shibuya + Harajuku",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-18__94": {
+    "name": "RECOfan (MAGNET by Shibuya109)",
+    "lat": 35.6635,
+    "lon": 139.7002,
+    "day": "2026-11-18",
+    "city": "Tokyo · Shibuya + Harajuku",
+    "tags": [
+      "music"
+    ]
+  },
+  "2026-11-18__95": {
+    "name": "diskunion ROCK in TOKYO",
+    "lat": 35.6621,
+    "lon": 139.6975,
+    "day": "2026-11-18",
+    "city": "Tokyo · Shibuya + Harajuku",
+    "tags": [
+      "music"
+    ]
+  },
+  "2026-11-18__96": {
+    "name": "Disk Union Shibuya Club Music",
+    "lat": 35.6621,
+    "lon": 139.6975,
+    "day": "2026-11-18",
+    "city": "Tokyo · Shibuya + Harajuku",
+    "tags": [
+      "music"
+    ]
+  },
+  "2026-11-18__97": {
+    "name": "Mandarake Shibuya",
+    "lat": 35.6614,
+    "lon": 139.6976,
+    "day": "2026-11-18",
+    "city": "Tokyo · Shibuya + Harajuku",
+    "tags": [
+      "games"
+    ]
+  },
+  "2026-11-18__98": {
+    "name": "Lunch — Udagawachō",
+    "lat": 35.6621,
+    "lon": 139.6975,
+    "day": "2026-11-18",
+    "city": "Tokyo · Shibuya + Harajuku",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-18__99": {
+    "name": "Walk up Cat Street → Harajuku",
+    "lat": 35.6659,
+    "lon": 139.7051,
+    "day": "2026-11-18",
+    "city": "Tokyo · Shibuya + Harajuku",
+    "tags": [
+      "explore"
+    ]
+  },
+  "2026-11-18__100": {
+    "name": "Flamingo (Cat Street)",
+    "lat": 35.6682,
+    "lon": 139.7098,
+    "day": "2026-11-18",
+    "city": "Tokyo · Shibuya + Harajuku",
+    "tags": [
+      "vintage"
+    ]
+  },
+  "2026-11-18__101": {
+    "name": "Kinji Harajuku",
+    "lat": 35.6682,
+    "lon": 139.7098,
+    "day": "2026-11-18",
+    "city": "Tokyo · Shibuya + Harajuku",
+    "tags": [
+      "vintage"
+    ]
+  },
+  "2026-11-18__102": {
+    "name": "RAGTAG Harajuku",
+    "lat": 35.6657,
+    "lon": 139.7053,
+    "day": "2026-11-18",
+    "city": "Tokyo · Shibuya + Harajuku",
+    "tags": [
+      "vintage"
+    ]
+  },
+  "2026-11-18__103": {
+    "name": "Chicago Harajuku",
+    "lat": 35.6661,
+    "lon": 139.7041,
+    "day": "2026-11-18",
+    "city": "Tokyo · Shibuya + Harajuku",
+    "tags": [
+      "vintage"
+    ]
+  },
+  "2026-11-18__104": {
+    "name": "Harajuku → Shinjuku",
+    "lat": 35.6705,
+    "lon": 139.7024,
+    "day": "2026-11-18",
+    "city": "Tokyo · Shibuya + Harajuku",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-18__105": {
+    "name": "Golden Gai",
+    "lat": 35.694,
+    "lon": 139.7047,
+    "day": "2026-11-18",
+    "city": "Tokyo · Shibuya + Harajuku",
+    "tags": [
+      "explore"
+    ]
+  },
+  "2026-11-19__106": {
+    "name": "Breakfast near the flat",
+    "lat": 35.703,
+    "lon": 139.6986,
+    "day": "2026-11-19",
+    "city": "Tokyo · Shimokitazawa + Kōenji",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-19__107": {
+    "name": "Flat → Shimokitazawa",
+    "lat": 35.6613,
+    "lon": 139.6669,
+    "day": "2026-11-19",
+    "city": "Tokyo · Shimokitazawa + Kōenji",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-19__108": {
+    "name": "Disk Union Shimokitazawa",
+    "lat": 35.6628,
+    "lon": 139.6729,
+    "day": "2026-11-19",
+    "city": "Tokyo · Shimokitazawa + Kōenji",
+    "tags": [
+      "music"
+    ]
+  },
+  "2026-11-19__109": {
+    "name": "Lunch — Rojiura Curry SAMURAI",
+    "lat": 35.6651,
+    "lon": 139.6691,
+    "day": "2026-11-19",
+    "city": "Tokyo · Shimokitazawa + Kōenji",
+    "tags": [
+      "food"
+    ]
+  },
+  "2026-11-19__110": {
+    "name": "AULD LANG SUN",
+    "lat": 35.662,
+    "lon": 139.6683,
+    "day": "2026-11-19",
+    "city": "Tokyo · Shimokitazawa + Kōenji",
+    "tags": [
+      "vintage"
+    ]
+  },
+  "2026-11-19__111": {
+    "name": "Furugiya Memento",
+    "lat": 35.662,
+    "lon": 139.6683,
+    "day": "2026-11-19",
+    "city": "Tokyo · Shimokitazawa + Kōenji",
+    "tags": [
+      "vintage"
+    ]
+  },
+  "2026-11-19__112": {
+    "name": "Shimokita wander",
+    "lat": 35.6613,
+    "lon": 139.6669,
+    "day": "2026-11-19",
+    "city": "Tokyo · Shimokitazawa + Kōenji",
+    "tags": [
+      "explore"
+    ]
+  },
+  "2026-11-19__113": {
+    "name": "Shimokitazawa → Kōenji",
+    "lat": 35.7053,
+    "lon": 139.65,
+    "day": "2026-11-19",
+    "city": "Tokyo · Shimokitazawa + Kōenji",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-19__114": {
+    "name": "BE-IN RECORDS",
+    "lat": 35.7015,
+    "lon": 139.6462,
+    "day": "2026-11-19",
+    "city": "Tokyo · Shimokitazawa + Kōenji",
+    "tags": [
+      "music"
+    ]
+  },
+  "2026-11-19__115": {
+    "name": "Trip Vintage Kōenji",
+    "lat": 35.7015,
+    "lon": 139.6462,
+    "day": "2026-11-19",
+    "city": "Tokyo · Shimokitazawa + Kōenji",
+    "tags": [
+      "vintage"
+    ]
+  },
+  "2026-11-19__116": {
+    "name": "Trip Vintage Mens Kōenji",
+    "lat": 35.7042,
+    "lon": 139.6528,
+    "day": "2026-11-19",
+    "city": "Tokyo · Shimokitazawa + Kōenji",
+    "tags": [
+      "vintage"
+    ]
+  },
+  "2026-11-19__117": {
+    "name": "Kōenji backstreets",
+    "lat": 35.7021,
+    "lon": 139.6477,
+    "day": "2026-11-19",
+    "city": "Tokyo · Shimokitazawa + Kōenji",
+    "tags": [
+      "explore"
+    ]
+  },
+  "2026-11-19__118": {
+    "name": "Kōenji → Shinjuku",
+    "lat": 35.7053,
+    "lon": 139.65,
+    "day": "2026-11-19",
+    "city": "Tokyo · Shimokitazawa + Kōenji",
+    "tags": [
+      "transit"
+    ]
+  },
+  "2026-11-19__119": {
+    "name": "Golden Gai",
+    "lat": 35.694,
+    "lon": 139.7047,
+    "day": "2026-11-19",
+    "city": "Tokyo · Shimokitazawa + Kōenji",
+    "tags": [
+      "explore"
+    ]
+  },
+  "2026-11-20__120": {
+    "name": "Coffee Times",
+    "lat": 35.6912,
+    "lon": 139.7041,
+    "day": "2026-11-20",
+    "city": "Tokyo · Shinjuku (coffee, gacha, jazz)",
+    "tags": [
+      "coffee"
+    ]
+  },
+  "2026-11-20__121": {
+    "name": "C-Pla Gachapon",
+    "lat": 35.6928,
+    "lon": 139.7033,
+    "day": "2026-11-20",
+    "city": "Tokyo · Shinjuku (coffee, gacha, jazz)",
+    "tags": [
+      "games"
+    ]
+  },
+  "2026-11-20__122": {
+    "name": "Lunch + afternoon — TBC",
+    "lat": 35.6945,
+    "lon": 139.7027,
+    "day": "2026-11-20",
+    "city": "Tokyo · Shinjuku (coffee, gacha, jazz)",
+    "tags": [
+      "explore"
+    ]
+  },
+  "2026-11-20__123": {
+    "name": "Jazz Spot Eagle (Yotsuya)",
+    "lat": 35.6847,
+    "lon": 139.7291,
+    "day": "2026-11-20",
+    "city": "Tokyo · Shinjuku (coffee, gacha, jazz)",
+    "tags": [
+      "music"
+    ]
+  },
+  "2026-11-20__124": {
+    "name": "Solo-Only Bar (Hitori Shinjuku)",
+    "lat": 35.6945,
+    "lon": 139.7027,
+    "day": "2026-11-20",
+    "city": "Tokyo · Shinjuku (coffee, gacha, jazz)",
+    "tags": [
+      "bar"
+    ]
+  }
+}
