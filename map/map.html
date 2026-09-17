@@ -83,6 +83,35 @@ body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Hiragino S
 <script type="module">
 import { Map as MLMap, NavigationControl, GeolocateControl, Popup, addProtocol } from './vendor/maplibre-gl.mjs';
 
+// A page's first-ever load isn't controlled by its own service worker (SW
+// control only kicks in on the NEXT navigation) — so the very first visit's
+// pmtiles Range requests for tokyo.pmtiles would go straight to the network
+// instead of through sw.js's Range-proxy. That matters here because GitHub
+// Pages' CDN doesn't reliably honour Range requests on this file (observed:
+// it returns 200 with the full body instead of 206), and pmtiles.js treats
+// a 200 with a content-length larger than the requested range as a hard
+// error — so without this, the very first visit would fail to load any
+// tiles. Standard fix: wait for the SW to actually claim this page (it
+// calls clients.claim() in its activate handler) before touching pmtiles at
+// all; if that doesn't happen fast enough, reload once so the next load is
+// controlled from the start. sessionStorage guards against a reload loop.
+if ('serviceWorker' in navigator) {
+  try {
+    await navigator.serviceWorker.register('./sw.js');
+    if (!navigator.serviceWorker.controller && !sessionStorage.getItem('sw-reloaded')) {
+      await Promise.race([
+        new Promise((r) => navigator.serviceWorker.addEventListener('controllerchange', r, { once: true })),
+        new Promise((r) => setTimeout(r, 3000)),
+      ]);
+      if (navigator.serviceWorker.controller) {
+        sessionStorage.setItem('sw-reloaded', '1');
+        location.reload();
+        await new Promise(() => {}); // reloading — stop this script here
+      }
+    }
+  } catch (e) { console.warn('sw register failed', e); }
+}
+
 const protocol = new pmtiles.Protocol();
 addProtocol('pmtiles', protocol.tile);
 
@@ -215,10 +244,6 @@ map.on('load', async () => {
   document.getElementById('loading').classList.add('hide');
 });
 map.on('error', (e) => console.error('map error', e.error && e.error.message));
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch((e) => console.warn('sw register failed', e));
-}
 </script>
 </body>
 </html>
