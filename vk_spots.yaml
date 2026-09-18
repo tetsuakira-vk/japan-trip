@@ -1,0 +1,60 @@
+# Curated visual-kei / J-music spots for the offline map (map/map.html).
+# Baked by scripts/bake_vk.py into map/data/vk_spots.geojson — see that
+# script for the (deliberately tiny, dependency-free) parser this file
+# needs to stay compatible with: one flat "- key: value" list, no nesting,
+# no multi-line values, no quoting needed.
+#
+# Fields: name (required), optional name_ja, category, note, area, and
+# either explicit lat/lon (preferred for accuracy) or an address to
+# geocode via Nominatim at build time.
+#
+# Categories: shop-cd, shop-fashion, livehouse, label-store, pilgrimage
+#
+# VERIFY each entry is still open/trading before trusting it — this seed
+# is scaffolding, not a checked list yet.
+
+- name: Closet Child Ikebukuro
+  name_ja: クローゼットチャイルド 池袋店
+  category: shop-cd
+  area: Ikebukuro
+  note: VK/goth secondhand CDs, goods, cheki — the music branch
+
+- name: Closet Child (Harajuku / Vivienne Westwood)
+  category: shop-fashion
+  area: Harajuku
+  address: 1-7-6 Jingumae, Shibuya, Tokyo
+  note: Secondhand Vivienne Westwood focus
+
+- name: Disk Union Shinjuku
+  category: shop-cd
+  area: Shinjuku
+  note: Multi-floor; check the metal/indies/J-indie floors
+
+- name: Disk Union Shibuya
+  category: shop-cd
+  area: Shibuya
+
+- name: Like an Edison
+  category: shop-cd
+  area: Takadanobaba
+  note: VK CDs/goods — confirm current branch/address
+
+- name: Pure Sound
+  category: shop-cd
+  area: Ikebukuro
+  note: J-rock/VK used CDs — VERIFY still trading
+
+- name: Meguro Rock May Kan (目黒鹿鳴館)
+  name_ja: 目黒鹿鳴館
+  category: livehouse
+  area: Meguro
+  note: Legendary VK live house
+
+- name: Takadanobaba AREA
+  category: livehouse
+  area: Takadanobaba
+
+- name: Jingubashi (Harajuku Bridge)
+  category: pilgrimage
+  area: Harajuku
+  note: Historic VK/cosplay gathering spot — much quieter now

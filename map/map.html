@@ -44,11 +44,13 @@ body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Hiragino S
 .chip .dot{width:8px;height:8px;border-radius:50%;background:var(--dot,var(--sub))}
 .chip[aria-pressed="true"]{background:var(--ink);color:#fff}
 .chip[aria-pressed="true"] .dot{background:var(--dot,#fff)}
+.chip-vk{border:1.5px solid var(--dot,var(--sub))}
 
 .maplibregl-popup-content{padding:12px 14px;border-radius:12px;font-family:inherit;box-shadow:0 6px 22px rgba(22,20,40,.22)}
 .pop-name{font-size:14.5px;font-weight:800;color:var(--ink);margin:0}
 .pop-ja{font-size:12px;color:var(--sub);margin:2px 0 0}
 .pop-meta{font-size:11.5px;color:var(--sub);margin:6px 0 0;text-transform:capitalize}
+.pop-note{font-size:11.5px;color:var(--sub);margin:5px 0 0;line-height:1.4}
 .pop-credit{font-size:10.5px;color:var(--sub);margin:4px 0 0;font-style:italic}
 .pop-link{display:inline-flex;align-items:center;gap:5px;margin-top:9px;font-size:12.5px;font-weight:700;color:#fff;text-decoration:none;background:var(--ink);border-radius:9px;padding:7px 11px}
 .pop-link svg{width:11px;height:11px}
@@ -74,7 +76,7 @@ body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Hiragino S
   <div class="mapwrap">
     <div id="map"></div>
     <div class="chips" id="chips"></div>
-    <p class="legend" id="legend">Konbini · Ramen · Onsen · Vending · ATM — mine, from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors. Orange — restaurant picks from a friend's <a href="https://japaneat.com" target="_blank" rel="noopener">Japan Eat</a> list.</p>
+    <p class="legend" id="legend">Konbini · Ramen · Onsen · Vending · ATM — mine, from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors. Orange — restaurant picks from a friend's <a href="https://japaneat.com" target="_blank" rel="noopener">Japan Eat</a> list. Purple family — curated visual-kei/J-music spots.</p>
     <div class="loading" id="loading">Loading offline map…</div>
   </div>
 </div>
@@ -96,10 +98,23 @@ addProtocol('pmtiles', protocol.tile);
 const CATEGORY_COLOR = {
   konbini: '#2e7d32', ramen: '#c62828', onsen: '#00838f',
   vending: '#6a1b9a', atm: '#1565c0', japaneat: '#ef6c00',
+  vk: '#4a148c', // chip accent only — the vk-pts layer itself is coloured
+                 // per sub-category by VK_CATEGORY_COLOR below
 };
 const CATEGORY_LABEL = {
   konbini: 'Konbini', ramen: 'Ramen', onsen: 'Onsen / Sento',
-  vending: 'Vending', atm: 'ATM', japaneat: 'JapanEats',
+  vending: 'Vending', atm: 'ATM', japaneat: 'JapanEats', vk: 'VK / J-Music',
+};
+// visual-kei/J-music sub-categories — one toggle chip covers all of them
+// (see CATEGORY_LABEL.vk above), but pins stay colour-coded by sub-category
+// so shops/live houses/pilgrimage spots stay visually distinct on the map.
+const VK_CATEGORY_COLOR = {
+  'shop-cd': '#8e24aa', 'shop-fashion': '#d81b60', livehouse: '#e53935',
+  'label-store': '#5e35b1', pilgrimage: '#3949ab',
+};
+const VK_CATEGORY_LABEL = {
+  'shop-cd': 'CD/media shop', 'shop-fashion': 'Fashion', livehouse: 'Live house',
+  'label-store': 'Label store', pilgrimage: 'Pilgrimage spot',
 };
 const PIN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>';
 
@@ -188,15 +203,18 @@ const map = new MLMap({
 map.addControl(new NavigationControl(), 'top-right');
 map.addControl(new GeolocateControl({ trackUserLocation: true, showUserHeading: true }), 'top-right');
 
-const ACTIVE = new Set(['konbini', 'ramen', 'onsen', 'vending', 'atm', 'japaneat']);
+const ACTIVE = new Set(['konbini', 'ramen', 'onsen', 'vending', 'atm', 'japaneat', 'vk']);
 
 function applyFilters() {
-  const poiCats = [...ACTIVE].filter((c) => c !== 'japaneat');
+  const poiCats = [...ACTIVE].filter((c) => c !== 'japaneat' && c !== 'vk');
   if (map.getLayer('pois-pts')) {
     map.setFilter('pois-pts', ['in', ['get', 'category'], ['literal', poiCats]]);
   }
   if (map.getLayer('japaneat-pts')) {
     map.setLayoutProperty('japaneat-pts', 'visibility', ACTIVE.has('japaneat') ? 'visible' : 'none');
+  }
+  if (map.getLayer('vk-pts')) {
+    map.setLayoutProperty('vk-pts', 'visibility', ACTIVE.has('vk') ? 'visible' : 'none');
   }
 }
 
@@ -205,7 +223,7 @@ function buildChips() {
   wrap.innerHTML = '';
   for (const cat of Object.keys(CATEGORY_LABEL)) {
     const btn = document.createElement('button');
-    btn.className = 'chip';
+    btn.className = 'chip' + (cat === 'vk' ? ' chip-vk' : '');
     btn.type = 'button';
     btn.setAttribute('aria-pressed', 'true');
     btn.style.setProperty('--dot', CATEGORY_COLOR[cat]);
@@ -223,18 +241,20 @@ function buildChips() {
 function popupHTML(p) {
   const ja = p.name_ja && p.name_ja !== p.name ? `<p class="pop-ja">${p.name_ja}</p>` : '';
   const foreignAtm = p.category === 'atm' && (p.foreign_atm === true || p.foreign_atm === 'true');
-  const meta = [CATEGORY_LABEL[p.category] || p.category, foreignAtm ? 'takes foreign cards' : null]
-    .filter(Boolean).join(' · ');
+  const metaLabel = CATEGORY_LABEL[p.category] || VK_CATEGORY_LABEL[p.category] || p.category;
+  const meta = [metaLabel, foreignAtm ? 'takes foreign cards' : null].filter(Boolean).join(' · ');
+  const note = p.note ? `<p class="pop-note">${p.note}</p>` : '';
   const credit = p.source === 'japaneat' ? '<p class="pop-credit">Pick from Japan Eat (japaneat.com)</p>' : '';
-  return `<p class="pop-name">${p.name}</p>${ja}<p class="pop-meta">${meta}</p>${credit}` +
+  return `<p class="pop-name">${p.name}</p>${ja}<p class="pop-meta">${meta}</p>${note}${credit}` +
     `<a class="pop-link" href="${p.apple}" target="_blank" rel="noopener">${PIN}Open in Maps</a>`;
 }
 
 map.on('load', async () => {
  try {
-  const [pois, japaneat, locations] = await Promise.all([
+  const [pois, japaneat, vk, locations] = await Promise.all([
     fetch('./data/pois.geojson').then((r) => r.json()),
     fetch('./data/japaneat.geojson').then((r) => r.json()),
+    fetch('./data/vk_spots.geojson').then((r) => r.json()),
     fetch('./data/trip.locations.json').then((r) => r.json()).catch(() => null),
   ]);
 
@@ -251,8 +271,10 @@ map.on('load', async () => {
 
   map.addSource('pois', { type: 'geojson', data: pois });
   map.addSource('japaneat', { type: 'geojson', data: japaneat });
+  map.addSource('vk', { type: 'geojson', data: vk });
 
   const colorExpr = ['match', ['get', 'category'], ...Object.entries(CATEGORY_COLOR).flat(), '#555'];
+  const vkColorExpr = ['match', ['get', 'category'], ...Object.entries(VK_CATEGORY_COLOR).flat(), CATEGORY_COLOR.vk];
   map.addLayer({
     id: 'pois-pts', type: 'circle', source: 'pois',
     paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 3, 16, 7],
@@ -263,8 +285,13 @@ map.on('load', async () => {
     paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 4, 16, 8],
       'circle-color': CATEGORY_COLOR.japaneat, 'circle-stroke-width': 1.5, 'circle-stroke-color': '#fff' },
   });
+  map.addLayer({
+    id: 'vk-pts', type: 'circle', source: 'vk',
+    paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 4, 16, 8],
+      'circle-color': vkColorExpr, 'circle-stroke-width': 1.5, 'circle-stroke-color': '#fff' },
+  });
 
-  for (const id of ['pois-pts', 'japaneat-pts']) {
+  for (const id of ['pois-pts', 'japaneat-pts', 'vk-pts']) {
     map.on('click', id, (e) => {
       const p = e.features[0].properties;
       new Popup({ closeButton: false, maxWidth: '260px' }).setLngLat(e.lngLat).setHTML(popupHTML(p)).addTo(map);

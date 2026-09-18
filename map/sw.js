@@ -66,7 +66,8 @@ const ASSETS = [
   "./data/japaneat.geojson",
   "./data/pois.geojson",
   "./data/pois.json",
-  "./data/trip.locations.json"
+  "./data/trip.locations.json",
+  "./data/vk_spots.geojson"
 ];
 
 self.addEventListener("install", (e) =>

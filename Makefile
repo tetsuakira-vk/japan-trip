@@ -3,8 +3,8 @@
 # Rebuilds the offline map page end to end. Needs: `npm install` once
 # (protomaps-themes-base, maplibre-gl, pmtiles, smp-noto-glyphs,
 # @tmcw/togeojson, @xmldom/xmldom — see package.json), and the `pmtiles`
-# CLI (go-pmtiles) on PATH. Re-run whenever data.js, the POI categories, or
-# the JapanEats list change.
+# CLI (go-pmtiles) on PATH. Re-run whenever data.js, the POI categories, the
+# JapanEats list, or vk_spots.yaml change.
 PMTILES_BUILD_DATE = 20260917
 
 map:
@@ -12,6 +12,7 @@ map:
 	python3 scripts/bake_region.py
 	python3 scripts/bake_pois.py
 	node scripts/bake_japaneat.mjs
+	python3 scripts/bake_vk.py
 	pmtiles extract https://build.protomaps.com/$(PMTILES_BUILD_DATE).pmtiles map/tokyo.pmtiles \
 		--region=map/region.geojson --maxzoom=15 --overwrite
 	node scripts/build_style.mjs
