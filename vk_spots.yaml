@@ -17,7 +17,8 @@
   name_ja: クローゼットチャイルド 池袋店
   category: shop-cd
   area: Ikebukuro
-  note: VK/goth secondhand CDs, goods, cheki — the music branch
+  address: 1-20-5 Higashiikebukuro, Toshima, Tokyo
+  note: VK/goth secondhand CDs, goods, cheki — confirmed via web search 2026-09; couldn't confirm this is specifically "the music branch" vs. other Closet Child Ikebukuro locations, verify in person
 
 - name: Closet Child (Harajuku / Vivienne Westwood)
   category: shop-fashion
@@ -36,25 +37,27 @@
 
 - name: Like an Edison
   category: shop-cd
-  area: Takadanobaba
-  note: VK CDs/goods — confirm current branch/address
+  area: Nishi-Shinjuku
+  address: 7-15-14 Nishishinjuku, Shinjuku, Tokyo
+  note: VK/idol/indies CDs — corrected 2026-09, this shop is in Nishi-Shinjuku (Sakamoto Bldg 1F), not Takadanobaba
 
 - name: Pure Sound
   category: shop-cd
-  area: Ikebukuro
-  note: J-rock/VK used CDs — VERIFY still trading
+  area: Nishi-Shinjuku
+  address: 7-15-17 Nishishinjuku, Shinjuku, Tokyo
+  note: VK/J-rock used CDs — corrected 2026-09, this shop is in Nishi-Shinjuku (Ikenishi Bldg 2F), not Ikebukuro; a few doors from Like an Edison
 
 - name: Meguro Rock May Kan (目黒鹿鳴館)
   name_ja: 目黒鹿鳴館
   category: livehouse
   area: Meguro
-  note: Legendary VK live house
+  address: 1-5-17 Meguro, Meguro, Tokyo
+  note: Legendary VK live house, confirmed still open (rockmaykan.com); geocode only resolves to ward level here, pin may be off by a few hundred meters — worth a manual lat/lon fix
 
-- name: Takadanobaba AREA
-  category: livehouse
-  area: Takadanobaba
+# Takadanobaba AREA removed 2026-09: confirmed permanently closed 2021-12-31.
 
 - name: Jingubashi (Harajuku Bridge)
   category: pilgrimage
   area: Harajuku
+  address: 神宮橋 渋谷区
   note: Historic VK/cosplay gathering spot — much quieter now

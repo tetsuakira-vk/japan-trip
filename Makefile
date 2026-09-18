@@ -9,12 +9,13 @@ PMTILES_BUILD_DATE = 20260917
 
 map:
 	node scripts/export_locations.mjs
-	python3 scripts/bake_region.py
 	python3 scripts/bake_pois.py
 	node scripts/bake_japaneat.mjs
 	python3 scripts/bake_vk.py
+	python3 scripts/bake_region.py
+	rm -f map/tokyo.pmtiles
 	pmtiles extract https://build.protomaps.com/$(PMTILES_BUILD_DATE).pmtiles map/tokyo.pmtiles \
-		--region=map/region.geojson --maxzoom=15 --overwrite
+		--region=map/region.geojson --maxzoom=15
 	node scripts/build_style.mjs
 	node scripts/export_glyphs.mjs
 	python3 scripts/build_icons.py
