@@ -83,35 +83,13 @@ body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Hiragino S
 <script type="module">
 import { Map as MLMap, NavigationControl, GeolocateControl, Popup, addProtocol } from './vendor/maplibre-gl.mjs';
 
-// A page's first-ever load isn't controlled by its own service worker (SW
-// control only kicks in on the NEXT navigation) — so the very first visit's
-// pmtiles Range requests for tokyo.pmtiles would go straight to the network
-// instead of through sw.js's Range-proxy. That matters here because GitHub
-// Pages' CDN doesn't reliably honour Range requests on this file (observed:
-// it returns 200 with the full body instead of 206), and pmtiles.js treats
-// a 200 with a content-length larger than the requested range as a hard
-// error — so without this, the very first visit would fail to load any
-// tiles. Standard fix: wait for the SW to actually claim this page (it
-// calls clients.claim() in its activate handler) before touching pmtiles at
-// all; if that doesn't happen fast enough, reload once so the next load is
-// controlled from the start. sessionStorage guards against a reload loop.
+// Registered for full offline installability, but the map's own first load
+// never waits on this — see the pmtiles buffer-loading note below.
 if ('serviceWorker' in navigator) {
-  try {
-    await navigator.serviceWorker.register('./sw.js');
-    if (!navigator.serviceWorker.controller && !sessionStorage.getItem('sw-reloaded')) {
-      await Promise.race([
-        new Promise((r) => navigator.serviceWorker.addEventListener('controllerchange', r, { once: true })),
-        new Promise((r) => setTimeout(r, 3000)),
-      ]);
-      if (navigator.serviceWorker.controller) {
-        sessionStorage.setItem('sw-reloaded', '1');
-        location.reload();
-        await new Promise(() => {}); // reloading — stop this script here
-      }
-    }
-  } catch (e) { console.warn('sw register failed', e); }
+  navigator.serviceWorker.register('./sw.js').catch((e) => console.warn('sw register failed', e));
 }
 
+const loadingEl = document.getElementById('loading');
 const protocol = new pmtiles.Protocol();
 addProtocol('pmtiles', protocol.tile);
 
@@ -133,14 +111,69 @@ const areaParam = (params.get('area') || '').toLowerCase();
 let center = [139.6987, 35.6944], zoom = 13.5; // Shinjuku, default
 document.getElementById('title').textContent = areaParam ? 'Map · ' + params.get('area') : 'Offline Map';
 
+// GitHub Pages' CDN doesn't reliably honour HTTP Range requests on the
+// basemap file (observed live: it can return 200 with the full body instead
+// of 206), and pmtiles.js treats a 200 whose content-length exceeds the
+// requested range as a fatal error — so the default URL-based pmtiles
+// source (which fetches byte ranges on demand) can fail outright. Instead,
+// fetch the whole file once as a plain GET (which GitHub Pages serves
+// correctly) and hand pmtiles.js an in-memory source that slices the
+// buffer locally — no Range requests, no dependency on the service worker
+// having installed yet, works identically on first visit and every visit
+// after. The trade-off is downloading the full ~30MB up front rather than
+// only the tiles in view; the progress readout below is so that doesn't
+// just look hung on a slow connection.
+class BufferSource {
+  constructor(key, buf) { this.key = key; this.buf = buf; }
+  getKey() { return this.key; }
+  async getBytes(offset, length) { return { data: this.buf.slice(offset, offset + length) }; }
+}
+async function fetchWithProgress(url, onProgress) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`fetch ${url} failed: ${res.status}`);
+  const total = Number(res.headers.get('content-length')) || 0;
+  if (!res.body || !total) return res.arrayBuffer();
+  const reader = res.body.getReader();
+  let received = 0;
+  const chunks = [];
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+    received += value.length;
+    onProgress(received / total);
+  }
+  const buf = new Uint8Array(received);
+  let offset = 0;
+  for (const chunk of chunks) { buf.set(chunk, offset); offset += chunk.length; }
+  return buf.buffer;
+}
+
+// Must exactly match style.json's `pmtiles://` source URL (minus the
+// scheme) so the protocol handler resolves tile requests to this instance
+// instead of falling back to its own URL-fetching source.
+const PMTILES_KEY = './tokyo.pmtiles';
+let style, pmBuf;
+try {
+  [style, pmBuf] = await Promise.all([
+    fetch('./style.json').then((r) => r.json()),
+    fetchWithProgress(PMTILES_KEY, (frac) => {
+      loadingEl.textContent = `Downloading offline map… ${Math.round(frac * 100)}%`;
+    }),
+  ]);
+} catch (e) {
+  loadingEl.textContent = 'Could not load the map — check your connection and reload.';
+  console.error('initial load failed', e);
+  throw e;
+}
 // MapLibre v6 requires the style's `sprite` URL to be absolute — a plain
 // relative path throws "Invalid sprite URL ... must be absolute" and the
 // sprite (small POI icons baked into the basemap, e.g. park/university)
 // silently never loads. style.json is baked with a relative path (portable
 // across hosts), so resolve it to this page's own origin before handing the
 // style off to MapLibre.
-const style = await fetch('./style.json').then((r) => r.json());
 if (style.sprite) style.sprite = new URL(style.sprite, location.href).href;
+protocol.add(new pmtiles.PMTiles(new BufferSource(PMTILES_KEY, pmBuf)));
 
 const map = new MLMap({
   container: 'map',
@@ -198,6 +231,7 @@ function popupHTML(p) {
 }
 
 map.on('load', async () => {
+ try {
   const [pois, japaneat, locations] = await Promise.all([
     fetch('./data/pois.geojson').then((r) => r.json()),
     fetch('./data/japaneat.geojson').then((r) => r.json()),
@@ -241,7 +275,11 @@ map.on('load', async () => {
 
   buildChips();
   applyFilters();
-  document.getElementById('loading').classList.add('hide');
+  loadingEl.classList.add('hide');
+ } catch (e) {
+  loadingEl.textContent = 'Could not load map data — check your connection and reload.';
+  console.error('data layer setup failed', e);
+ }
 });
 map.on('error', (e) => console.error('map error', e.error && e.error.message));
 </script>

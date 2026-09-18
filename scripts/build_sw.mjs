@@ -43,45 +43,12 @@ self.addEventListener("activate", (e) =>
   e.waitUntil(caches.keys().then((ks) =>
     Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())));
 
-// The .pmtiles file is fetched by MapLibre/pmtiles.js via HTTP Range
-// requests. A cached Response can't be range-sliced directly, so on the
-// first range request we pull the whole cached (or freshly fetched) file
-// into memory once and serve every subsequent range from that buffer.
-let pmBufPromise = null;
-async function pmBuffer(url) {
-  if (!pmBufPromise) {
-    pmBufPromise = (async () => {
-      const c = await caches.open(CACHE);
-      const res = (await c.match(url, { ignoreSearch: true })) || (await fetch(url));
-      return res.arrayBuffer();
-    })();
-  }
-  return pmBufPromise;
-}
-
+// map.html fetches tokyo.pmtiles as one plain GET (see its BufferSource
+// note — GitHub Pages doesn't reliably honor Range requests on this file),
+// so a plain cache-first-then-network handler is all this needs; there's no
+// Range request to proxy.
 self.addEventListener("fetch", (e) => {
-  const req = e.request;
-  const range = req.headers.get("range");
-  if (range && req.url.endsWith(".pmtiles")) {
-    e.respondWith((async () => {
-      const buf = await pmBuffer(req.url);
-      const m = /bytes=(\\d+)-(\\d*)/.exec(range);
-      const start = Number(m[1]);
-      const end = m[2] ? Number(m[2]) : buf.byteLength - 1;
-      const slice = buf.slice(start, end + 1);
-      return new Response(slice, {
-        status: 206,
-        headers: {
-          "Content-Range": \`bytes \${start}-\${end}/\${buf.byteLength}\`,
-          "Accept-Ranges": "bytes",
-          "Content-Length": String(slice.byteLength),
-          "Content-Type": "application/octet-stream",
-        },
-      });
-    })());
-    return;
-  }
-  e.respondWith(caches.match(req, { ignoreSearch: true }).then((r) => r || fetch(req)));
+  e.respondWith(caches.match(e.request, { ignoreSearch: true }).then((r) => r || fetch(e.request)));
 });
 `;
 
