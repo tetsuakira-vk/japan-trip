@@ -1,12 +1,17 @@
-.PHONY: map serve clean-map
+.PHONY: all map recorder serve clean
 
-# Rebuilds the offline map page end to end. Needs: `npm install` once
-# (protomaps-themes-base, maplibre-gl, pmtiles, smp-noto-glyphs,
-# @tmcw/togeojson, @xmldom/xmldom — see package.json), and the `pmtiles`
-# CLI (go-pmtiles) on PATH. Re-run whenever data.js, the POI categories, the
-# JapanEats list, or vk_spots.yaml change.
+# Rebuilds both offline mini-PWAs (map/ and recorder/) end to end. Needs:
+# `npm install` once (protomaps-themes-base, maplibre-gl, pmtiles,
+# smp-noto-glyphs, @tmcw/togeojson, @xmldom/xmldom, jszip — see
+# package.json), and the `pmtiles` CLI (go-pmtiles) on PATH.
 PMTILES_BUILD_DATE = 20260917
 
+all: map recorder
+	python3 scripts/build_icons.py
+	node scripts/build_sw.mjs
+
+# Re-run whenever data.js, the POI categories, the JapanEats list, or
+# vk_spots.yaml change.
 map:
 	node scripts/export_locations.mjs
 	python3 scripts/bake_pois.py
@@ -18,16 +23,20 @@ map:
 		--region=map/region.geojson --maxzoom=15
 	node scripts/build_style.mjs
 	node scripts/export_glyphs.mjs
-	python3 scripts/build_icons.py
-	node scripts/build_sw.mjs
 	@echo "--- map/tokyo.pmtiles size ---"
 	@ls -lh map/tokyo.pmtiles
 
+# Re-run whenever soundscape_targets.yaml changes.
+recorder:
+	python3 scripts/bake_soundscape.py
+
 # Local-only: `python3 -m http.server` doesn't support HTTP Range requests,
-# which pmtiles needs, so use `serve` for anything touching the .pmtiles.
+# and map/basemap.mjs's own fetch needs a real server anyway — use `serve`
+# for anything touching either mini-PWA.
 serve:
 	npx serve@latest -l 8901 .
 
-clean-map:
+clean:
 	rm -rf map/tokyo.pmtiles map/style.json map/sw.js map/fonts map/data \
-		map/region.geojson map/icon-192.png map/icon-512.png
+		map/region.geojson map/icon-192.png map/icon-512.png \
+		recorder/data recorder/sw.js recorder/icon-192.png recorder/icon-512.png

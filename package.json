@@ -1,14 +1,15 @@
 {
-  "name": "japan-trip-map-build",
+  "name": "japan-trip-offline-build",
   "private": true,
   "type": "module",
-  "description": "Local build tooling for the offline map page (see Makefile / scripts/). Not shipped — only its outputs (map/style.json, map/vendor/*, map/tokyo.pmtiles, map/data/*.geojson, map/fonts/*) are served.",
+  "description": "Local build tooling for the offline map + field recorder mini-PWAs (see Makefile / scripts/). Not shipped — only their outputs (map/style.json, map/vendor/*, map/tokyo.pmtiles, map/data/*.geojson, map/fonts/*, map/basemap.mjs, recorder/vendor/*, recorder/data/*.geojson) are served.",
   "devDependencies": {
-    "protomaps-themes-base": "^4.5.0",
+    "@tmcw/togeojson": "^7.1.2",
+    "@xmldom/xmldom": "^0.9.8",
+    "jszip": "^3.10.2",
     "maplibre-gl": "^6.10.0",
     "pmtiles": "^4.5.0",
-    "smp-noto-glyphs": "^2.0.0",
-    "@tmcw/togeojson": "^7.1.2",
-    "@xmldom/xmldom": "^0.9.8"
+    "protomaps-themes-base": "^4.5.0",
+    "smp-noto-glyphs": "^2.0.0"
   }
 }

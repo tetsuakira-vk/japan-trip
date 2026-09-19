@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Bakes vk_spots.yaml (curated visual-kei / J-music spots) into
-map/data/vk_spots.geojson, geocoding anything without explicit lat/lon via
-Nominatim (OpenStreetMap, free, no key). Shares its YAML parser and geocode
-helpers with bake_soundscape.py — see scripts/lib_curated_spots.py.
+"""Bakes soundscape_targets.yaml (curated field-recording targets) into
+recorder/data/soundscape_targets.geojson. See scripts/lib_curated_spots.py
+for the shared YAML parser and Nominatim geocode helpers (also used by
+bake_vk.py).
 """
 import json
 import os
@@ -13,9 +13,9 @@ from lib_curated_spots import apple_maps_link, geocode_spots, parse_spots_yaml
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-SPOTS_PATH = os.path.join(ROOT, "vk_spots.yaml")
-OUT_PATH = os.path.join(ROOT, "map", "data", "vk_spots.geojson")
-UA = "japan-trip-personal-itinerary/1.0 (one-time VK-spot geocode; contact: robertjohnathannelson@gmail.com)"
+SPOTS_PATH = os.path.join(ROOT, "soundscape_targets.yaml")
+OUT_PATH = os.path.join(ROOT, "recorder", "data", "soundscape_targets.geojson")
+UA = "japan-trip-personal-itinerary/1.0 (one-time soundscape-target geocode; contact: robertjohnathannelson@gmail.com)"
 
 
 def main():
@@ -33,8 +33,8 @@ def main():
             "properties": {
                 "name": s["name"],
                 "name_ja": s.get("name_ja") or None,
-                "category": s.get("category", "vk"),
-                "source": "vk",
+                "category": s.get("category", "soundscape"),
+                "source": "soundscape",
                 "note": s.get("note") or None,
                 "area": s.get("area") or None,
                 "apple": apple_maps_link(s["name"], lat, lon),
@@ -44,9 +44,9 @@ def main():
     os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
     json.dump({"type": "FeatureCollection", "features": feats}, open(OUT_PATH, "w", encoding="utf-8"), ensure_ascii=False)
 
-    print(f"VK spots: {len(feats)} geocoded -> {OUT_PATH}")
+    print(f"Soundscape targets: {len(feats)} geocoded -> {OUT_PATH}")
     if unresolved:
-        print(f"\n!! no geocode, add lat/lon manually in vk_spots.yaml for:")
+        print(f"\n!! no geocode, add lat/lon manually in soundscape_targets.yaml for:")
         for name in unresolved:
             print(f"   - {name}")
 

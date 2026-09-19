@@ -83,17 +83,15 @@ body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Hiragino S
 
 <script src="./vendor/pmtiles.js"></script>
 <script type="module">
-import { Map as MLMap, NavigationControl, GeolocateControl, Popup, addProtocol } from './vendor/maplibre-gl.mjs';
+import { createOfflineMap, NavigationControl, GeolocateControl, Popup } from './basemap.mjs';
 
 // Registered for full offline installability, but the map's own first load
-// never waits on this — see the pmtiles buffer-loading note below.
+// never waits on this — see basemap.mjs's pmtiles buffer-loading note.
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').catch((e) => console.warn('sw register failed', e));
 }
 
 const loadingEl = document.getElementById('loading');
-const protocol = new pmtiles.Protocol();
-addProtocol('pmtiles', protocol.tile);
 
 const CATEGORY_COLOR = {
   konbini: '#2e7d32', ramen: '#c62828', onsen: '#00838f',
@@ -126,80 +124,22 @@ const areaParam = (params.get('area') || '').toLowerCase();
 let center = [139.6987, 35.6944], zoom = 13.5; // Shinjuku, default
 document.getElementById('title').textContent = areaParam ? 'Map · ' + params.get('area') : 'Offline Map';
 
-// GitHub Pages' CDN doesn't reliably honour HTTP Range requests on the
-// basemap file (observed live: it can return 200 with the full body instead
-// of 206), and pmtiles.js treats a 200 whose content-length exceeds the
-// requested range as a fatal error — so the default URL-based pmtiles
-// source (which fetches byte ranges on demand) can fail outright. Instead,
-// fetch the whole file once as a plain GET (which GitHub Pages serves
-// correctly) and hand pmtiles.js an in-memory source that slices the
-// buffer locally — no Range requests, no dependency on the service worker
-// having installed yet, works identically on first visit and every visit
-// after. The trade-off is downloading the full ~30MB up front rather than
-// only the tiles in view; the progress readout below is so that doesn't
-// just look hung on a slow connection.
-class BufferSource {
-  constructor(key, buf) { this.key = key; this.buf = buf; }
-  getKey() { return this.key; }
-  async getBytes(offset, length) { return { data: this.buf.slice(offset, offset + length) }; }
-}
-async function fetchWithProgress(url, onProgress) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`fetch ${url} failed: ${res.status}`);
-  const total = Number(res.headers.get('content-length')) || 0;
-  if (!res.body || !total) return res.arrayBuffer();
-  const reader = res.body.getReader();
-  let received = 0;
-  const chunks = [];
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    chunks.push(value);
-    received += value.length;
-    onProgress(received / total);
-  }
-  const buf = new Uint8Array(received);
-  let offset = 0;
-  for (const chunk of chunks) { buf.set(chunk, offset); offset += chunk.length; }
-  return buf.buffer;
-}
-
-// Must exactly match style.json's `pmtiles://` source URL (minus the
-// scheme) so the protocol handler resolves tile requests to this instance
-// instead of falling back to its own URL-fetching source.
-const PMTILES_KEY = './tokyo.pmtiles';
-let style, pmBuf;
+let map;
 try {
-  [style, pmBuf] = await Promise.all([
-    fetch('./style.json').then((r) => r.json()),
-    fetchWithProgress(PMTILES_KEY, (frac) => {
-      loadingEl.textContent = `Downloading offline map… ${Math.round(frac * 100)}%`;
-    }),
-  ]);
+  map = await createOfflineMap({
+    container: 'map',
+    center, zoom,
+    onProgress: (frac) => { loadingEl.textContent = `Downloading offline map… ${Math.round(frac * 100)}%`; },
+    // The built-in attribution control's compact/expanded behaviour collides
+    // with our own legend box at phone widths — fold both credits into that
+    // legend instead (see #legend below) and skip the control entirely.
+    attributionControl: false,
+  });
 } catch (e) {
   loadingEl.textContent = 'Could not load the map — check your connection and reload.';
   console.error('initial load failed', e);
   throw e;
 }
-// MapLibre v6 requires the style's `sprite` URL to be absolute — a plain
-// relative path throws "Invalid sprite URL ... must be absolute" and the
-// sprite (small POI icons baked into the basemap, e.g. park/university)
-// silently never loads. style.json is baked with a relative path (portable
-// across hosts), so resolve it to this page's own origin before handing the
-// style off to MapLibre.
-if (style.sprite) style.sprite = new URL(style.sprite, location.href).href;
-protocol.add(new pmtiles.PMTiles(new BufferSource(PMTILES_KEY, pmBuf)));
-
-const map = new MLMap({
-  container: 'map',
-  style,
-  center, zoom,
-  // The built-in attribution control's compact/expanded behaviour collides
-  // with our own legend box at phone widths — fold both credits into that
-  // legend instead (see #legend below) and skip the control entirely.
-  attributionControl: false,
-  localIdeographFontFamily: "'Hiragino Sans','Hiragino Kaku Gothic ProN',sans-serif",
-});
 map.addControl(new NavigationControl(), 'top-right');
 map.addControl(new GeolocateControl({ trackUserLocation: true, showUserHeading: true }), 'top-right');
 

@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
-"""Generates the two PWA icons (map/icon-192.png, map/icon-512.png) as plain
-RGBA PNGs, written by hand via zlib — no Pillow/ImageMagick available, and a
-personal offline map doesn't need real artwork, just a valid installable
-icon: the app's dark background with a simple white pin mark.
+"""Generates PWA icons (icon-192.png, icon-512.png) for map/ and recorder/
+as plain RGBA PNGs, written by hand via zlib — no Pillow/ImageMagick
+available, and a personal offline app doesn't need real artwork, just a
+valid installable icon: the app's dark background with a simple mark.
 """
 import os
 import struct
 import zlib
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(os.path.dirname(HERE), "map")
+ROOT = os.path.dirname(HERE)
 
 BG = (0x16, 0x14, 0x28, 255)   # --ink
 FG = (0xFF, 0xFF, 0xFF, 255)
+REC = (0xE5, 0x39, 0x35, 255)  # record-red accent, for the recorder icon
 
 
 def png_chunk(tag, data):
@@ -35,12 +36,19 @@ def pin_mask(size, x, y):
     return False
 
 
-def make_icon(path, size):
+def record_dot_mask(size, x, y):
+    # A plain filled record-button dot, centred.
+    cx, cy, r = size * 0.5, size * 0.5, size * 0.32
+    u, v = (x - cx) / r, (y - cy) / r
+    return u * u + v * v <= 1.0
+
+
+def make_icon(path, size, mask_fn, fg=FG, bg=BG):
     rows = []
     for y in range(size):
         row = bytearray([0])  # filter type 0 (none)
         for x in range(size):
-            px = FG if pin_mask(size, x, y) else BG
+            px = fg if mask_fn(size, x, y) else bg
             row += bytes(px)
         rows.append(bytes(row))
     raw = b"".join(rows)
@@ -56,10 +64,15 @@ def make_icon(path, size):
 
 
 def main():
-    for size in (192, 512):
-        out = os.path.join(OUT_DIR, f"icon-{size}.png")
-        make_icon(out, size)
-        print(f"wrote {out}")
+    targets = [
+        (os.path.join(ROOT, "map"), pin_mask, FG),
+        (os.path.join(ROOT, "recorder"), record_dot_mask, REC),
+    ]
+    for out_dir, mask_fn, fg in targets:
+        for size in (192, 512):
+            out = os.path.join(out_dir, f"icon-{size}.png")
+            make_icon(out, size, mask_fn, fg=fg)
+            print(f"wrote {out}")
 
 
 if __name__ == "__main__":

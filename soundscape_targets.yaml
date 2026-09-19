@@ -1,0 +1,62 @@
+# Curated soundscape recording targets for the field recorder
+# (recorder/recorder.html) — geofence spots worth a deliberate ambient
+# capture (departure melodies, crossings, shrines, markets), on top of the
+# trip's own itinerary stops (map/data/trip.locations.json), which the
+# recorder page loads automatically alongside this list.
+#
+# Baked by scripts/bake_soundscape.py into
+# recorder/data/soundscape_targets.geojson — same flat-YAML shape as
+# vk_spots.yaml (see scripts/lib_curated_spots.py for the parser this
+# needs to stay compatible with): one "- key: value" list, no nesting, no
+# multi-line values, no quoting needed.
+#
+# This is a starter set of famous, stable landmarks (not itinerary-specific)
+# — edit/prune/expand freely. You can also drop your own pins straight from
+# the recorder page's map.
+
+- name: Shibuya Scramble Crossing
+  category: crossing
+  area: Shibuya
+  address: Shibuya Crossing, Shibuya, Tokyo
+  note: The crossing itself — best around a signal change, expect crowd noise
+
+- name: Shinjuku Station South Exit
+  category: station
+  area: Shinjuku
+  lat: 35.6896
+  lon: 139.7006
+  note: Departure melodies — try platform level if accessible
+
+- name: Harajuku Station
+  category: station
+  area: Harajuku
+  address: Harajuku Station, Shibuya, Tokyo
+  note: Departure melody + crossing/street noise outside
+
+- name: Meiji Shrine (main torii)
+  category: shrine
+  area: Harajuku
+  address: Meiji Jingu, Shibuya, Tokyo
+  note: Gravel footsteps under the forest canopy, very different from street noise
+
+- name: Hanazono Shrine
+  name_ja: 花園神社
+  category: shrine
+  area: Shinjuku
+  lat: 35.6933
+  lon: 139.7058
+  note: Small shrine tucked into Kabukicho — already verified for the itinerary
+
+- name: Senso-ji
+  name_ja: 浅草寺
+  category: shrine
+  area: Asakusa
+  address: Sensoji Temple, Taito, Tokyo
+  note: Nakamise-dori approach + temple grounds — try both
+
+- name: Ameyoko Market
+  name_ja: アメ横
+  category: market
+  area: Ueno
+  address: Ameyoko, Taito, Tokyo
+  note: Market callers/vendors — busiest midday, quieter early morning

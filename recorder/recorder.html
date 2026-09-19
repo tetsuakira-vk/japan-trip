@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#161428">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Field Rec">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="stylesheet" href="../map/vendor/maplibre-gl.css">
+<title>Japan · Field Recorder</title>
+
+<!-- Offline field recorder for ambient/soundscape capture (station
+     melodies, konbini chimes, crossings, shrines) — clips + targets live
+     in this browser's IndexedDB until exported. Fully offline once loaded:
+     capture, geofencing and export are all local; only the embedded target
+     map needs the ../map/ basemap (works offline too, once that page has
+     been opened at least once so its service worker has cached it).
+
+     Hard browser limits, by design — see the README-style note in the UI:
+     no background or screen-off recording is possible. Manual capture is
+     the reliable core; geofence reminders and foreground auto-capture only
+     work while this tab stays open and visible. -->
+<style>
+:root{
+  --bg:#F4F1EC; --ink:#161428; --sub:#736F8C; --card:#FFFFFF; --line:#E7E2D8;
+  --rec:#e53935; --walk:#2e7d32;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Hiragino Sans","Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.45}
+.layout{max-width:480px;margin:0 auto;min-height:100vh;padding:0 0 40px}
+.hd{padding:calc(env(safe-area-inset-top) + 20px) 20px 24px;background:linear-gradient(135deg,#1E1B3A,#161428 60%);color:#fff;display:flex;align-items:center;gap:10px;position:relative;overflow:hidden}
+.hd::after{content:"";position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(229,57,53,.3),transparent 70%)}
+.back{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,.14);color:#fff;text-decoration:none;position:relative;z-index:1}
+.back svg{width:16px;height:16px}
+.hdtext{position:relative;z-index:1}
+.eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#B8B4D6;margin:0 0 4px;font-weight:600}
+.title{font-weight:800;font-size:22px;line-height:1.1;margin:0;letter-spacing:-.01em}
+
+.content{padding:16px 18px 0}
+.panel{background:var(--card);border-radius:16px;padding:16px;box-shadow:0 2px 10px rgba(22,20,40,.06);margin-bottom:14px}
+.panel-title{font-size:13.5px;font-weight:800;color:var(--ink);margin:0 0 4px;display:flex;align-items:center;gap:6px}
+.panel-title .n{font-weight:700;color:var(--sub);font-size:12px}
+.panel-sub{font-size:12px;color:var(--sub);margin:0 0 10px;line-height:1.5}
+
+.rec-row{display:flex;align-items:center;gap:14px}
+.recbtn{flex:0 0 auto;border:none;cursor:pointer;font:inherit;font-weight:800;font-size:14px;color:#fff;background:var(--rec);border-radius:14px;padding:14px 20px;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 14px rgba(229,57,53,.35)}
+.recbtn[aria-pressed="true"]{background:var(--ink)}
+.recbtn .dot{width:10px;height:10px;border-radius:50%;background:#fff}
+.elapsed{font-variant-numeric:tabular-nums;font-weight:800;font-size:20px;color:var(--ink)}
+#meter{display:block;width:100%;margin-top:12px;border-radius:8px;background:var(--bg)}
+.recwarn{font-size:12px;font-weight:700;color:var(--rec);margin:10px 0 0}
+.rectip{font-size:11px;color:var(--sub);margin:12px 0 0;line-height:1.5;padding-top:10px;border-top:1px solid var(--line)}
+
+.walk-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.walkbtn{flex:0 0 auto;border:none;cursor:pointer;font:inherit;font-weight:800;font-size:13px;color:#fff;background:var(--walk);border-radius:10px;padding:9px 16px}
+.walkbtn[aria-pressed="true"]{background:var(--rec)}
+.walkbanner{font-size:12px;font-weight:700;color:var(--walk);background:color-mix(in srgb, var(--walk) 12%, white);border-radius:10px;padding:9px 11px;margin:12px 0 0;line-height:1.5}
+
+.permlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.permrow{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;font-weight:700}
+.permstatus{font-size:11px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:var(--bg);color:var(--sub)}
+.permstatus.granted{background:color-mix(in srgb, var(--walk) 16%, white);color:var(--walk)}
+.permstatus.denied{background:color-mix(in srgb, var(--rec) 14%, white);color:var(--rec)}
+.permbtn{border:none;cursor:pointer;font:inherit;font-size:11.5px;font-weight:700;color:#fff;background:var(--ink);border-radius:8px;padding:6px 10px}
+
+.collapse-toggle{width:100%;text-align:left;background:none;border:none;padding:0;font:inherit;font-size:13.5px;font-weight:800;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.collapse-toggle::after{content:"+";font-size:18px;color:var(--sub);font-weight:400;line-height:1}
+.collapse-toggle[aria-expanded="true"]::after{content:"–"}
+.targets-body{padding-top:12px}
+.targetmap{width:100%;height:220px;border-radius:12px;overflow:hidden;background:var(--line);margin-bottom:12px;position:relative}
+.targetmap .maphint{position:absolute;left:8px;bottom:8px;z-index:2;background:rgba(255,255,255,.92);font-size:10.5px;color:var(--sub);padding:5px 9px;border-radius:8px;pointer-events:none}
+.addpop input{font:inherit;font-size:13px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;width:140px}
+.addpop button{font:inherit;font-size:12px;font-weight:700;border:none;background:var(--ink);color:#fff;border-radius:8px;padding:6px 10px;margin-left:6px;cursor:pointer}
+.targetlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto}
+.targetrow{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:6px 2px;border-bottom:1px solid var(--line)}
+.targetrow .dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+.targetrow .name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+.targetrow .dist{color:var(--sub);font-size:11px;flex:0 0 auto}
+.targetrow input[type="checkbox"]{flex:0 0 auto}
+
+.cliplist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.clip{border:1px solid var(--line);border-radius:12px;padding:11px 12px}
+.clip-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.clip-name{font-size:13px;font-weight:800;margin:0}
+.clip-meta{font-size:11px;color:var(--sub);margin:2px 0 0}
+.clip-del{border:none;background:none;color:var(--sub);cursor:pointer;font-size:11px;font-weight:700;padding:2px 4px}
+.clip audio{width:100%;margin-top:8px;height:32px}
+.clip textarea{width:100%;margin-top:8px;font:inherit;font-size:12.5px;border:1px solid var(--line);border-radius:8px;padding:7px 8px;resize:vertical;min-height:36px;color:var(--ink);background:var(--bg)}
+.empty{font-size:12.5px;color:var(--sub);text-align:center;padding:6px 0}
+
+.export-row{display:flex;flex-direction:column;gap:8px}
+.exportbtn{border:none;cursor:pointer;font:inherit;font-size:13px;font-weight:800;color:#fff;background:var(--ink);border-radius:10px;padding:11px 14px}
+.exportbtn.secondary{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
+
+.toastwrap{position:fixed;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 16px calc(env(safe-area-inset-bottom) + 16px);z-index:20;pointer-events:none}
+.toast{background:var(--ink);color:#fff;font-size:12.5px;font-weight:700;padding:10px 14px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.3);max-width:400px;text-align:center}
+
+.foot{text-align:center;color:var(--sub);font-size:11px;letter-spacing:.03em;padding:10px 20px 0}
+</style>
+</head>
+<body>
+<div class="layout">
+  <header class="hd">
+    <a class="back" href="../index.html" aria-label="Back to itinerary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
+    <div class="hdtext">
+      <p class="eyebrow">Japan</p>
+      <h1 class="title">Field Recorder</h1>
+    </div>
+  </header>
+
+  <main class="content">
+    <section class="panel">
+      <div class="rec-row">
+        <button id="recBtn" class="recbtn" type="button" aria-pressed="false"><span class="dot"></span><span id="recLabel">Record</span></button>
+        <span class="elapsed" id="elapsed">00:00</span>
+      </div>
+      <canvas id="meter" width="280" height="28"></canvas>
+      <p class="recwarn" id="recWarn" hidden>Long clip — storage adds up fast at this length.</p>
+      <p class="rectip">Wind kills outdoor audio (shield the mic) · aim for ~30–90s · hold the phone still · mono is fine</p>
+    </section>
+
+    <section class="panel">
+      <div class="walk-row">
+        <div>
+          <p class="panel-title">Recording walk</p>
+          <p class="panel-sub">Foreground auto-capture near your targets, screen held on. Browsers can't record with the screen off or the app backgrounded — keep this tab open and visible while you walk.</p>
+        </div>
+        <button id="walkBtn" class="walkbtn" type="button" aria-pressed="false">Start</button>
+      </div>
+      <p class="walkbanner" id="walkBanner" hidden>Screen staying on — recording walk active.</p>
+    </section>
+
+    <section class="panel" id="permPanel">
+      <p class="panel-title">Permissions</p>
+      <ul class="permlist" id="permList"></ul>
+    </section>
+
+    <section class="panel">
+      <button class="collapse-toggle" id="targetsToggle" type="button" aria-expanded="false">
+        Geofence targets <span class="n" id="targetsCount"></span>
+      </button>
+      <div class="targets-body" id="targetsBody" hidden>
+        <p class="panel-sub">A reminder (or an auto-capture during a walk) fires within 60m of an enabled target. Tap empty map space to drop your own; tap a pin to rename, toggle or remove it.</p>
+        <div class="targetmap" id="targetMap"><p class="maphint" id="mapHint">Loading map…</p></div>
+        <ul class="targetlist" id="targetList"></ul>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="panel-title">Clips <span class="n" id="clipsCount"></span></p>
+      <p class="empty" id="clipsEmpty">No clips yet — tap Record to capture your first soundscape.</p>
+      <ul class="cliplist" id="clipList"></ul>
+    </section>
+
+    <section class="panel">
+      <p class="panel-title">Export</p>
+      <p class="panel-sub">Clips stay on this device until you export — take them home on wifi to feed AzuraCast.</p>
+      <div class="export-row">
+        <button class="exportbtn" id="exportZip" type="button">Download all (zip)</button>
+        <button class="exportbtn secondary" id="exportGeo" type="button">Export map pins (GeoJSON)</button>
+      </div>
+    </section>
+  </main>
+  <p class="foot">Manual capture always works · reminders/auto-capture need this tab open and visible · nothing leaves this device until you export</p>
+</div>
+
+<div class="toastwrap" id="toastWrap"></div>
+
+<script src="../map/vendor/pmtiles.js"></script>
+<script src="./vendor/jszip.min.js"></script>
+<script type="module">
+import { createOfflineMap, Popup } from '../map/basemap.mjs';
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch((e) => console.warn('sw register failed', e));
+}
+
+/* ---------------------------------------------------------------------
+   IndexedDB — "clips" (blob + metadata) and "spots" (geofence targets).
+--------------------------------------------------------------------- */
+const openDB = () => new Promise((resolve, reject) => {
+  const req = indexedDB.open('fieldrec', 1);
+  req.onupgradeneeded = () => {
+    const d = req.result;
+    if (!d.objectStoreNames.contains('clips')) d.createObjectStore('clips', { keyPath: 'id' });
+    if (!d.objectStoreNames.contains('spots')) d.createObjectStore('spots', { keyPath: 'id' });
+  };
+  req.onsuccess = () => resolve(req.result);
+  req.onerror = () => reject(req.error);
+});
+let db;
+const putClip = (c) => db.transaction('clips', 'readwrite').objectStore('clips').put(c);
+const deleteClip = (id) => db.transaction('clips', 'readwrite').objectStore('clips').delete(id);
+const allClips = () => new Promise((resolve) => {
+  const out = [];
+  const cur = db.transaction('clips').objectStore('clips').openCursor();
+  cur.onsuccess = (e) => { const k = e.target.result; if (k) { out.push(k.value); k.continue(); } else resolve(out); };
+});
+const putSpot = (s) => db.transaction('spots', 'readwrite').objectStore('spots').put(s);
+const deleteSpot = (id) => db.transaction('spots', 'readwrite').objectStore('spots').delete(id);
+const allSpots = () => new Promise((resolve) => {
+  const out = [];
+  const cur = db.transaction('spots').objectStore('spots').openCursor();
+  cur.onsuccess = (e) => { const k = e.target.result; if (k) { out.push(k.value); k.continue(); } else resolve(out); };
+});
+
+/* ---------------------------------------------------------------------
+   Toasts — the reliable, always-visible reminder surface. The
+   Notification API is layered on top when permission is granted, but a
+   focused tab often suppresses its own notifications, so this in-page
+   toast is what actually gets seen most of the time.
+--------------------------------------------------------------------- */
+function toast(msg, ms = 6000) {
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), ms);
+}
+function notify(msg) {
+  toast(msg);
+  if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+    try { new Notification('Field Recorder', { body: msg }); } catch (e) { /* ignore */ }
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Permissions panel — plain-language, request-on-tap, reflects current
+   status. Manual capture must still work with location/notifications
+   denied, so nothing here blocks the record button.
+--------------------------------------------------------------------- */
+const PERMS = [
+  { key: 'mic', label: 'Microphone', hint: 'Needed to record anything.' },
+  { key: 'geo', label: 'Location', hint: 'Tags clips with coordinates and drives geofence reminders. Capture still works without it.' },
+  { key: 'notif', label: 'Notifications', hint: 'Nudges you when you’re near a target. In-page alerts still show either way.' },
+];
+async function permStatus(key) {
+  try {
+    if (key === 'mic') {
+      const p = await navigator.permissions.query({ name: 'microphone' });
+      return p.state;
+    }
+    if (key === 'geo') {
+      const p = await navigator.permissions.query({ name: 'geolocation' });
+      return p.state;
+    }
+    if (key === 'notif') {
+      return typeof Notification === 'undefined' ? 'unsupported' : Notification.permission === 'default' ? 'prompt' : Notification.permission;
+    }
+  } catch (e) { return 'prompt'; }
+}
+async function requestPerm(key) {
+  if (key === 'mic') {
+    try {
+      const s = await navigator.mediaDevices.getUserMedia({ audio: true });
+      s.getTracks().forEach((t) => t.stop());
+    } catch (e) { /* status refresh below will show denied */ }
+  } else if (key === 'geo') {
+    await new Promise((res) => navigator.geolocation.getCurrentPosition(res, res, { timeout: 8000 }));
+  } else if (key === 'notif') {
+    await Notification.requestPermission();
+  }
+  renderPerms();
+}
+async function renderPerms() {
+  const list = document.getElementById('permList');
+  list.innerHTML = '';
+  for (const p of PERMS) {
+    const status = await permStatus(p.key);
+    const li = document.createElement('li');
+    li.className = 'permrow';
+    const label = document.createElement('span');
+    label.textContent = p.label;
+    const right = document.createElement('span');
+    right.style.display = 'flex'; right.style.alignItems = 'center'; right.style.gap = '8px';
+    const pill = document.createElement('span');
+    pill.className = 'permstatus' + (status === 'granted' ? ' granted' : status === 'denied' ? ' denied' : '');
+    pill.textContent = status === 'unsupported' ? 'n/a' : status;
+    right.appendChild(pill);
+    if (status !== 'granted' && status !== 'unsupported') {
+      const btn = document.createElement('button');
+      btn.className = 'permbtn'; btn.type = 'button'; btn.textContent = 'Enable';
+      btn.title = p.hint;
+      btn.addEventListener('click', () => requestPerm(p.key));
+      right.appendChild(btn);
+    }
+    li.appendChild(label); li.appendChild(right);
+    list.appendChild(li);
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Location + geofencing.
+--------------------------------------------------------------------- */
+let lastPos = null;
+const R = 60;           // geofence radius, metres
+const armed = new Set();
+let SPOTS = [];          // in-memory mirror of the "spots" IndexedDB store
+
+function haversine(la1, lo1, la2, lo2) {
+  const R2 = 6371000, d = Math.PI / 180;
+  const a = Math.sin((la2 - la1) * d / 2) ** 2 +
+            Math.cos(la1 * d) * Math.cos(la2 * d) * Math.sin((lo2 - lo1) * d / 2) ** 2;
+  return 2 * R2 * Math.asin(Math.sqrt(a));
+}
+async function refreshSpots() {
+  SPOTS = await allSpots();
+  renderTargetList();
+  if (targetMapState.map) updateTargetMapPins();
+}
+if ('geolocation' in navigator) {
+  navigator.geolocation.watchPosition((p) => {
+    lastPos = p.coords;
+    renderTargetList(); // keep the live distance readout fresh
+    for (const s of SPOTS) {
+      if (!s.enabled) continue;
+      const dist = haversine(p.coords.latitude, p.coords.longitude, s.lat, s.lon);
+      if (dist <= R && !armed.has(s.id)) {
+        armed.add(s.id);
+        if (AUTO && document.visibilityState === 'visible') startRec(s.name);
+        else notify(`You’re near ${s.name} — capture the soundscape?`);
+      }
+      if (dist > R * 2) armed.delete(s.id);
+    }
+  }, (e) => console.warn('geolocation', e), { enableHighAccuracy: true, maximumAge: 5000 });
+}
+
+/* ---------------------------------------------------------------------
+   Recording.
+--------------------------------------------------------------------- */
+let rec = null, chunks = [], stream = null, recStartedAt = 0, elapsedTimer = null, meterRaf = null;
+
+function pickMime() {
+  const candidates = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/mp4;codecs=mp4a.40.2'];
+  return candidates.find((m) => typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(m)) || '';
+}
+
+async function startRec(nearSpot = null) {
+  if (rec && rec.state === 'recording') return;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch (e) {
+    toast('Microphone permission is needed to record.');
+    return;
+  }
+  const mime = pickMime();
+  rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+  const actualMime = rec.mimeType || mime || 'audio/webm';
+  chunks = [];
+  recStartedAt = Date.now();
+  rec.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+  rec.onstop = async () => {
+    const blob = new Blob(chunks, { type: actualMime });
+    const duration = Date.now() - recStartedAt;
+    await putClip({
+      id: crypto.randomUUID(),
+      blob, mime: actualMime,
+      lat: lastPos?.latitude ?? null, lon: lastPos?.longitude ?? null, accuracy: lastPos?.accuracy ?? null,
+      started: recStartedAt, duration, note: '', nearSpot,
+    });
+    stream.getTracks().forEach((t) => t.stop());
+    stopMeter();
+    renderClips();
+  };
+  rec.start();
+  startMeter(stream);
+  setRecUI(true, nearSpot);
+}
+function stopRec() {
+  if (rec && rec.state === 'recording') rec.stop();
+  setRecUI(false);
+}
+function setRecUI(recording, nearSpot) {
+  const btn = document.getElementById('recBtn');
+  const label = document.getElementById('recLabel');
+  btn.setAttribute('aria-pressed', String(recording));
+  label.textContent = recording ? 'Stop' : 'Record';
+  if (recording) {
+    document.getElementById('recWarn').hidden = true;
+    elapsedTimer = setInterval(() => {
+      const ms = Date.now() - recStartedAt;
+      const s = Math.floor(ms / 1000);
+      document.getElementById('elapsed').textContent = `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+      document.getElementById('recWarn').hidden = ms < 180000;
+    }, 250);
+    if (nearSpot) toast(`Recording near ${nearSpot}…`);
+  } else {
+    clearInterval(elapsedTimer);
+    document.getElementById('elapsed').textContent = '00:00';
+  }
+}
+document.getElementById('recBtn').addEventListener('click', () => {
+  if (rec && rec.state === 'recording') stopRec(); else startRec(null);
+});
+
+/* --- live level meter (AnalyserNode -> canvas) --- */
+let audioCtx = null, analyser = null;
+function startMeter(mediaStream) {
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const src = audioCtx.createMediaStreamSource(mediaStream);
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 256;
+  src.connect(analyser);
+  const canvas = document.getElementById('meter');
+  const ctx = canvas.getContext('2d');
+  const data = new Uint8Array(analyser.frequencyBinCount);
+  const draw = () => {
+    analyser.getByteFrequencyData(data);
+    const avg = data.reduce((a, b) => a + b, 0) / data.length;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#E7E2D8';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const w = Math.min(canvas.width, (avg / 255) * canvas.width * 1.6);
+    ctx.fillStyle = avg > 200 ? '#e53935' : '#161428';
+    ctx.fillRect(0, 0, w, canvas.height);
+    meterRaf = requestAnimationFrame(draw);
+  };
+  draw();
+}
+function stopMeter() {
+  if (meterRaf) cancelAnimationFrame(meterRaf);
+  if (audioCtx) audioCtx.close().catch(() => {});
+  const canvas = document.getElementById('meter');
+  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+}
+
+/* ---------------------------------------------------------------------
+   Recording walk — foreground auto-capture + Screen Wake Lock.
+--------------------------------------------------------------------- */
+let AUTO = false, wakeLock = null;
+async function keepAwake() {
+  try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) { console.warn('wake lock', e); }
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && AUTO && !wakeLock) keepAwake();
+});
+document.getElementById('walkBtn').addEventListener('click', async () => {
+  AUTO = !AUTO;
+  const btn = document.getElementById('walkBtn');
+  const banner = document.getElementById('walkBanner');
+  btn.setAttribute('aria-pressed', String(AUTO));
+  btn.textContent = AUTO ? 'Stop' : 'Start';
+  banner.hidden = !AUTO;
+  if (AUTO) {
+    await keepAwake();
+    if (typeof Notification !== 'undefined' && Notification.permission === 'default') Notification.requestPermission();
+  } else if (wakeLock) {
+    try { await wakeLock.release(); } catch (e) {}
+    wakeLock = null;
+  }
+});
+
+/* ---------------------------------------------------------------------
+   Clip list.
+--------------------------------------------------------------------- */
+const clipUrls = new Map(); // id -> object URL, revoked on re-render
+function fmtTime(ms) {
+  const d = new Date(ms);
+  return d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+function fmtDuration(ms) {
+  const s = Math.round(ms / 1000);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
+async function renderClips() {
+  const clips = (await allClips()).sort((a, b) => b.started - a.started);
+  document.getElementById('clipsCount').textContent = clips.length ? `(${clips.length})` : '';
+  document.getElementById('clipsEmpty').hidden = clips.length > 0;
+  for (const url of clipUrls.values()) URL.revokeObjectURL(url);
+  clipUrls.clear();
+  const list = document.getElementById('clipList');
+  list.innerHTML = '';
+  for (const c of clips) {
+    const url = URL.createObjectURL(c.blob);
+    clipUrls.set(c.id, url);
+    const li = document.createElement('li');
+    li.className = 'clip';
+    const coords = c.lat != null ? `${c.lat.toFixed(4)}, ${c.lon.toFixed(4)}` : 'no location';
+    li.innerHTML = `
+      <div class="clip-top">
+        <div>
+          <p class="clip-name">${c.nearSpot ? c.nearSpot : 'Clip'}</p>
+          <p class="clip-meta">${fmtTime(c.started)} · ${fmtDuration(c.duration)} · ${coords}</p>
+        </div>
+        <button class="clip-del" type="button">Delete</button>
+      </div>
+      <audio controls src="${url}"></audio>
+      <textarea placeholder="Note (what/why this clip)">${c.note || ''}</textarea>
+    `;
+    li.querySelector('.clip-del').addEventListener('click', async () => {
+      if (!confirm('Delete this clip? This can’t be undone.')) return;
+      await deleteClip(c.id);
+      renderClips();
+    });
+    li.querySelector('textarea').addEventListener('change', async (e) => {
+      c.note = e.target.value;
+      await putClip(c);
+    });
+    list.appendChild(li);
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Targets: seed from trip.locations.json + curated soundscape targets,
+   merged into IndexedDB once (idempotent — safe to re-run every load).
+--------------------------------------------------------------------- */
+async function seedSpotsIfNeeded() {
+  const existing = await allSpots();
+  const known = new Set(existing.map((s) => s.id));
+  const toAdd = [];
+
+  try {
+    const trip = await fetch('../map/data/trip.locations.json').then((r) => r.json());
+    for (const loc of Object.values(trip)) {
+      const id = `trip::${loc.name}`;
+      if (known.has(id)) continue;
+      known.add(id);
+      toAdd.push({ id, name: loc.name, lat: loc.lat, lon: loc.lon, source: 'trip', enabled: true });
+    }
+  } catch (e) { console.warn('trip.locations.json unavailable', e); }
+
+  try {
+    const soundscape = await fetch('./data/soundscape_targets.geojson').then((r) => r.json());
+    for (const f of soundscape.features || []) {
+      const name = f.properties.name;
+      const id = `soundscape::${name}`;
+      if (known.has(id)) continue;
+      known.add(id);
+      const [lon, lat] = f.geometry.coordinates;
+      toAdd.push({ id, name, lat, lon, source: 'soundscape', enabled: true });
+    }
+  } catch (e) { console.warn('soundscape_targets.geojson unavailable', e); }
+
+  for (const s of toAdd) await putSpot(s);
+  if (toAdd.length) await refreshSpots();
+}
+
+function renderTargetList() {
+  const list = document.getElementById('targetList');
+  document.getElementById('targetsCount').textContent = SPOTS.length ? `(${SPOTS.length})` : '';
+  const SOURCE_COLOR = { trip: '#3B6FE0', soundscape: '#E08A2E', custom: '#2e9e6b' };
+  const sorted = [...SPOTS].sort((a, b) => {
+    if (!lastPos) return a.name.localeCompare(b.name);
+    const da = haversine(lastPos.latitude, lastPos.longitude, a.lat, a.lon);
+    const db = haversine(lastPos.latitude, lastPos.longitude, b.lat, b.lon);
+    return da - db;
+  });
+  list.innerHTML = '';
+  for (const s of sorted) {
+    const li = document.createElement('li');
+    li.className = 'targetrow';
+    const dist = lastPos ? `${Math.round(haversine(lastPos.latitude, lastPos.longitude, s.lat, s.lon))}m` : '';
+    li.innerHTML = `
+      <span class="dot" style="background:${SOURCE_COLOR[s.source] || '#736F8C'}"></span>
+      <span class="name">${s.name}</span>
+      <span class="dist">${dist}</span>
+      <input type="checkbox" ${s.enabled ? 'checked' : ''} aria-label="Enable ${s.name}">
+    `;
+    li.querySelector('input').addEventListener('change', async (e) => {
+      s.enabled = e.target.checked;
+      await putSpot(s);
+    });
+    list.appendChild(li);
+  }
+}
+
+/* --- embedded target-picker map, built lazily when the panel opens --- */
+const targetMapState = { map: null, markers: [] };
+async function ensureTargetMap() {
+  if (targetMapState.map) return;
+  const hint = document.getElementById('mapHint');
+  try {
+    const map = await createOfflineMap({
+      container: 'targetMap',
+      center: lastPos ? [lastPos.longitude, lastPos.latitude] : [139.6987, 35.6944],
+      zoom: 13,
+      onProgress: (frac) => { hint.textContent = `Loading map… ${Math.round(frac * 100)}%`; },
+    });
+    targetMapState.map = map;
+    map.on('load', () => {
+      hint.textContent = 'Tap empty space to add a target';
+      map.addSource('spots', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+      map.addLayer({
+        id: 'spots-pts', type: 'circle', source: 'spots',
+        paint: {
+          'circle-radius': 6,
+          'circle-color': ['match', ['get', 'source'], 'trip', '#3B6FE0', 'soundscape', '#E08A2E', 'custom', '#2e9e6b', '#736F8C'],
+          'circle-stroke-width': 1.5, 'circle-stroke-color': '#fff',
+        },
+      });
+      updateTargetMapPins();
+
+      map.on('click', 'spots-pts', (e) => {
+        const p = e.features[0].properties;
+        const s = SPOTS.find((x) => x.id === p.id);
+        if (!s) return;
+        const html = document.createElement('div');
+        html.innerHTML = `<strong>${s.name}</strong><br>` +
+          `<label style="font-size:12px"><input type="checkbox" ${s.enabled ? 'checked' : ''}> enabled</label><br>` +
+          (s.source === 'custom' ? '<button type="button" style="margin-top:6px">Delete</button>' : '');
+        const popup = new Popup({ closeButton: true }).setLngLat(e.lngLat).setDOMContent(html).addTo(map);
+        html.querySelector('input').addEventListener('change', async (ev) => {
+          s.enabled = ev.target.checked;
+          await putSpot(s);
+        });
+        const delBtn = html.querySelector('button');
+        if (delBtn) delBtn.addEventListener('click', async () => {
+          await deleteSpot(s.id);
+          popup.remove();
+          await refreshSpots();
+        });
+      });
+
+      map.on('click', (e) => {
+        const hit = map.queryRenderedFeatures(e.point, { layers: ['spots-pts'] });
+        if (hit.length) return; // handled by the layer-specific listener above
+        const html = document.createElement('div');
+        html.className = 'addpop';
+        html.innerHTML = `<input type="text" placeholder="Target name" maxlength="60"><button type="button">Add</button>`;
+        const popup = new Popup({ closeButton: true }).setLngLat(e.lngLat).setDOMContent(html).addTo(map);
+        html.querySelector('button').addEventListener('click', async () => {
+          const name = html.querySelector('input').value.trim();
+          if (!name) return;
+          await putSpot({ id: `custom::${crypto.randomUUID()}`, name, lat: e.lngLat.lat, lon: e.lngLat.lng, source: 'custom', enabled: true });
+          popup.remove();
+          await refreshSpots();
+        });
+      });
+    });
+  } catch (e) {
+    hint.textContent = 'Could not load the map (needs a connection, or open ../map/map.html once first for offline use).';
+    console.error('target map failed', e);
+  }
+}
+function updateTargetMapPins() {
+  const map = targetMapState.map;
+  if (!map || !map.getSource('spots')) return;
+  map.getSource('spots').setData({
+    type: 'FeatureCollection',
+    features: SPOTS.map((s) => ({
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [s.lon, s.lat] },
+      properties: { id: s.id, name: s.name, source: s.source },
+    })),
+  });
+}
+document.getElementById('targetsToggle').addEventListener('click', () => {
+  const btn = document.getElementById('targetsToggle');
+  const body = document.getElementById('targetsBody');
+  const open = btn.getAttribute('aria-expanded') === 'true';
+  btn.setAttribute('aria-expanded', String(!open));
+  body.hidden = open;
+  if (!open) { ensureTargetMap(); setTimeout(() => targetMapState.map?.resize(), 50); }
+});
+
+/* ---------------------------------------------------------------------
+   Export — zip of clips + manifest.json, and a GeoJSON pins layer.
+--------------------------------------------------------------------- */
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+document.getElementById('exportZip').addEventListener('click', async () => {
+  const clips = await allClips();
+  if (!clips.length) { toast('No clips to export yet.'); return; }
+  const zip = new JSZip();
+  const manifest = [];
+  for (const c of clips) {
+    const ext = c.mime.includes('mp4') ? 'm4a' : 'webm';
+    const stamp = new Date(c.started).toISOString().slice(0, 16).replace(/[:T]/g, '-');
+    const place = (c.nearSpot || 'clip').replace(/\s+/g, '-');
+    const fname = `${stamp}_${place}_${(c.lat ?? 0).toFixed(4)}_${(c.lon ?? 0).toFixed(4)}.${ext}`;
+    zip.file(fname, c.blob);
+    manifest.push({ file: fname, lat: c.lat, lon: c.lon, accuracy: c.accuracy, started: c.started, duration_ms: c.duration, note: c.note, nearSpot: c.nearSpot });
+  }
+  zip.file('manifest.json', JSON.stringify(manifest, null, 2));
+  toast('Zipping clips…');
+  const blob = await zip.generateAsync({ type: 'blob' });
+  downloadBlob(blob, 'fieldrec-export.zip');
+});
+document.getElementById('exportGeo').addEventListener('click', async () => {
+  const clips = (await allClips()).filter((c) => c.lat != null);
+  if (!clips.length) { toast('No geotagged clips to export yet.'); return; }
+  const fc = {
+    type: 'FeatureCollection',
+    features: clips.map((c) => ({
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [c.lon, c.lat] },
+      properties: { source: 'recordings', nearSpot: c.nearSpot, note: c.note, started: c.started, duration_ms: c.duration },
+    })),
+  };
+  downloadBlob(new Blob([JSON.stringify(fc)], { type: 'application/json' }), 'recordings.geojson');
+});
+
+/* ---------------------------------------------------------------------
+   Boot.
+--------------------------------------------------------------------- */
+db = await openDB();
+await seedSpotsIfNeeded();
+await refreshSpots();
+renderPerms();
+renderClips();
+</script>
+</body>
+</html>
